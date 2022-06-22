@@ -2,9 +2,17 @@ import '../styles.css'
 
 import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import React from 'react'
+import Image from '@tiptap/extension-image'
+import React, { useCallback } from 'react'
 
 const MenuBar = ({ editor } : any) => {
+  const addImage = useCallback(() => {
+    const url = window.prompt('URL')
+    if (url) {
+      editor.chain().focus().setImage({ src: url }).run()
+    }
+  }, [editor])
+  
   if (!editor) {
     return null;
   }
@@ -125,14 +133,17 @@ const MenuBar = ({ editor } : any) => {
       <button onClick={() => editor.chain().focus().redo().run()}>
         redo
       </button>
+      <button onClick={addImage}> setImage </button>
     </div>
   );
 }
 
 const Editor = () => {
+  /// https://tiptap.dev/extensions tiptap扩展
   const editor = useEditor({
     extensions: [
       StarterKit,
+      Image
     ],
     content: `
       <h2>
@@ -163,6 +174,8 @@ const Editor = () => {
         <br />
         — Mom
       </blockquote>
+      <p>This is a basic example of implementing images. Drag to re-order.</p>
+      <img src="https://source.unsplash.com/8xznAGy4HcY/800x400" />
     `,
   });
 

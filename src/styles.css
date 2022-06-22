@@ -46,3 +46,9 @@
   border-top: 2px solid rgba(#0D0D0D, 0.1);
   margin: 2rem 0;
 }
+
+.ProseMirror img {
+  height: auto;
+  max-width: 100%;
+  outline: 3px solid #68cef8;
+}
