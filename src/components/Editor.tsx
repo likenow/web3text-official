@@ -3,15 +3,88 @@ import '../styles.css'
 import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
-import React, { useCallback } from 'react'
+import { generateHTML, generateJSON } from '@tiptap/html'
+import React, { useEffect, useCallback, useState, useMemo } from 'react'
 
 const MenuBar = ({ editor } : any) => {
+  const [editable, setEditable] = useState<boolean>(false)
+  useEffect(() => {
+    if (!editor) {
+      return undefined
+    }
+    editor.setEditable(editable)
+  }, [editor, editable])
+  
   const addImage = useCallback(() => {
     const url = window.prompt('URL')
     if (url) {
       editor.chain().focus().setImage({ src: url }).run()
     }
   }, [editor])
+  const htmlExample = '<p>Example <strong>Text</strong></p>'
+  const htmlImport = useCallback(() => {
+    editor.commands.setContent(htmlExample)
+  }, [editor])
+
+  const htmlExport: any = useCallback(() => {
+    let content = editor.getHTML()
+    console.log(content)
+    return content
+  }, [editor])
+  const jsonExample = {
+    type: 'doc',
+    content: [
+      {
+        type: 'paragraph',
+        content: [
+          {
+            type: 'text',
+            text: 'Example ',
+          },
+          {
+            type: 'text',
+            marks: [
+              {
+                type: 'bold',
+              },
+            ],
+            text: 'Text',
+          },
+        ],
+      },
+    ],
+  }
+  const jsonImport = useCallback(() => {
+    editor.commands.setContent(jsonExample)
+  }, [editor])
+
+  const jsonExport = useCallback(() => {
+    let content = editor.getJSON()
+    console.log(content)
+    return content
+  }, [editor])
+
+  const generateHTMLFromJSON = useMemo(() => {
+    return generateHTML(jsonExample, [
+      StarterKit,
+      Image
+    ])
+  }, [jsonExample])
+
+  const generateJSONFromHTML = useMemo(() => {
+    return generateJSON(htmlExample, [
+      StarterKit,
+      Image
+    ])
+  }, [htmlExample])
+
+  const htmlFromJson = () => {
+    console.log(generateHTMLFromJSON)
+  }
+
+  const jsonFromHtml = () => {
+    console.log(generateJSONFromHTML)
+  }
   
   if (!editor) {
     return null;
@@ -134,6 +207,20 @@ const MenuBar = ({ editor } : any) => {
         redo
       </button>
       <button onClick={addImage}> setImage </button>
+      <button onClick={htmlExport}> Export HTML </button>
+      <button onClick={htmlImport}> Import HTML </button>
+      <button onClick={jsonExport}> Export JSON </button>
+      <button onClick={jsonImport}> Import JSON </button>
+      <button onClick={htmlFromJson}> Generate HTML from JSON </button>
+      <button onClick={jsonFromHtml}> Generate JSON from HTML </button>
+      <div className="checkbox">
+        <input
+          type="checkbox"
+          id="editable"
+          onChange={event => setEditable(event.target.checked)}
+        />
+        <label htmlFor="editable">editable</label>
+      </div>
     </div>
   );
 }

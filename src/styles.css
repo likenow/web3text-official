@@ -52,3 +52,7 @@
   max-width: 100%;
   outline: 3px solid #68cef8;
 }
+
+.checkbox input[type='checkbox'] {
+  cursor: not-allowed;
+}
