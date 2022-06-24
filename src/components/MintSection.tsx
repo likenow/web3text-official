@@ -2,8 +2,11 @@ import React from 'react';
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { ethers } from "ethers";
+import Typography from "@mui/material/Typography";
+
 import { get, subscribe } from "../store";
-import { connectWallet } from "./ConnectWallet";
+import Container from "./Container";
+import ConnectWallet, { connectWallet } from "./ConnectWallet";
 import showMessage from "./showMessage";
 
 const ETHERSCAN_DOMAIN =
@@ -11,15 +14,23 @@ const ETHERSCAN_DOMAIN =
     ? "etherscan.io"
     : "rinkeby.etherscan.io";
 
+const Content = styled.div`
+  max-width: 840px;
+  margin: 0 auto 5% auto;
+  strong {
+    color: red;
+  }
+`;
+
 const StyledMintButton = styled.div`
   display: inline-block;
   width: 140px;
   text-align: center;
   padding: 10px 10px;
-  border: 1px solid #000;
-  border-radius: 16px;
+  border: 4px solid #000;
+  border-radius: 20px;
   color: #000;
-  background: #eee;
+  background: #dde4b6;
   cursor: ${(props: any) => {
     return props.minting || props.disabled ? "not-allowed" : "pointer";
   }};
@@ -85,16 +96,16 @@ function MintButton(props: any) {
         setMinting(false);
       }}
       style={{
-        background: "#fff",
+        background: "#dde4b6",
         ...props.style,
       }}
     >
-      铸造文章 NFT{minting ? "中..." : ""}
+      铸造 {props.mintAmount} 个{minting ? "中..." : ""}
     </StyledMintButton>
   );
 }
 
-function Mint() {
+function MintSection() {
   const [status, setStatus] = useState("0");
   const [progress, setProgress] = useState<number | null>(null);
   const [fullAddress, setFullAddress] = useState(null);
@@ -173,7 +184,11 @@ function Mint() {
 
   if (status === "1") {
     mintButton = (
-      <div>
+      <div
+        style={{
+          display: "flex",
+        }}
+      >
         <MintButton
           onMinted={refreshStatus}
           mintAmount={1}
@@ -243,9 +258,71 @@ function Mint() {
   }
   
   return (
-    <>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
+    >
+      <div style={{ marginBottom: 20, display: "flex", alignItems: "center" }}>
+        您的钱包： <ConnectWallet />{" "}
+        {fullAddress && (
+          <span style={{ marginLeft: 10 }}>
+            已铸造的数量为： {numberMinted} 。
+          </span>
+        )}
+      </div>
       {mintButton}
-    </>
+      <div style={{ marginTop: 10 }}>
+        请移步在{" "}
+        <a
+          href="https://opensea.io/"
+          target="_blank"
+          rel="noreferrer"
+          style={{
+            color: "#61dafb",
+          }}
+        >
+          OpenSea
+        </a>{" "}
+        上查看。
+      </div>
+    </div>
+  );
+}
+
+function Mint() {
+  return (
+    <Container
+      style={{
+        background: "#282c34",
+        color: "#fff",
+      }}
+      id="mint"
+    >
+      <Typography
+        style={{ textAlign: "center", marginTop: "5%" }}
+        variant="h3"
+        gutterBottom
+        component="div"
+      >
+        铸造（Mint）
+      </Typography>
+
+      <Content>
+        <div
+          style={{
+            marginTop: 60,
+            border: "4px dashed #000",
+            padding: "40px",
+            borderRadius: 20,
+          }}
+        >
+          <MintSection />
+        </div>
+      </Content>
+    </Container>
   );
 }
 

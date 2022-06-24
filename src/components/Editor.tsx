@@ -1,16 +1,18 @@
-import '../styles.css'
+import '../styles.css';
 
-import { EditorContent, useEditor } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
-import TextAlign from '@tiptap/extension-text-align'
-import Image from '@tiptap/extension-image'
-import { generateHTML, generateJSON } from '@tiptap/html'
-import React, { useEffect, useCallback, useState, useMemo } from 'react'
-import { IconButton } from '@mui/material'
-import FormatAlignCenterIcon from '@mui/icons-material/FormatAlignCenter'
-import FormatAlignLeftIcon from '@mui/icons-material/FormatAlignLeft'
-import FormatAlignRightIcon from '@mui/icons-material/FormatAlignRight'
-import FormatAlignJustifyIcon from '@mui/icons-material/FormatAlignJustify'
+import { EditorContent, useEditor } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import TextAlign from '@tiptap/extension-text-align';
+import Image from '@tiptap/extension-image';
+import { generateHTML, generateJSON } from '@tiptap/html';
+import React, { useEffect, useCallback, useState, useMemo } from 'react';
+import { IconButton } from '@mui/material';
+import FormatAlignCenterIcon from '@mui/icons-material/FormatAlignCenter';
+import FormatAlignLeftIcon from '@mui/icons-material/FormatAlignLeft';
+import FormatAlignRightIcon from '@mui/icons-material/FormatAlignRight';
+import FormatAlignJustifyIcon from '@mui/icons-material/FormatAlignJustify';
+
+import Mint from './Mint';
 
 
 const MenuBar = ({ editor } : any) => {
@@ -240,6 +242,7 @@ const MenuBar = ({ editor } : any) => {
         />
         <label htmlFor="editable">editable</label>
       </div>
+      <Mint />
     </div>
   );
 }
