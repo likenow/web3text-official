@@ -2,9 +2,16 @@ import '../styles.css'
 
 import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
+import TextAlign from '@tiptap/extension-text-align'
 import Image from '@tiptap/extension-image'
 import { generateHTML, generateJSON } from '@tiptap/html'
 import React, { useEffect, useCallback, useState, useMemo } from 'react'
+import { IconButton } from '@mui/material'
+import FormatAlignCenterIcon from '@mui/icons-material/FormatAlignCenter'
+import FormatAlignLeftIcon from '@mui/icons-material/FormatAlignLeft'
+import FormatAlignRightIcon from '@mui/icons-material/FormatAlignRight'
+import FormatAlignJustifyIcon from '@mui/icons-material/FormatAlignJustify'
+
 
 const MenuBar = ({ editor } : any) => {
   const [editable, setEditable] = useState<boolean>(false)
@@ -98,6 +105,18 @@ const MenuBar = ({ editor } : any) => {
         marginBottom: "5%"
       }}
     >
+      <IconButton onClick={() => editor.chain().focus().setTextAlign('center').run()} className={editor.isActive({ textAlign: 'center' }) ? 'is-active' : ''} aria-label="center">
+        <FormatAlignCenterIcon />
+      </IconButton>
+      <IconButton onClick={() => editor.chain().focus().setTextAlign('left').run()} className={editor.isActive({ textAlign: 'left' }) ? 'is-active' : ''} aria-label="left">
+        <FormatAlignLeftIcon />
+      </IconButton>
+      <IconButton onClick={() => editor.chain().focus().setTextAlign('right').run()} className={editor.isActive({ textAlign: 'right' }) ? 'is-active' : ''} aria-label="right">
+        <FormatAlignRightIcon />
+      </IconButton>
+      <IconButton onClick={() => editor.chain().focus().setTextAlign('justify').run()} className={editor.isActive({ textAlign: 'justify' }) ? 'is-active' : ''} aria-label="justify">
+        <FormatAlignJustifyIcon />
+      </IconButton>
       <button
         onClick={() => editor.chain().focus().toggleBold().run()}
         className={editor.isActive('bold') ? 'is-active' : ''}
@@ -227,9 +246,13 @@ const MenuBar = ({ editor } : any) => {
 
 const Editor = () => {
   /// https://tiptap.dev/extensions tiptap扩展
+  /// https://tiptap.dev/api/extensions/ tiptap扩展文档
   const editor = useEditor({
     extensions: [
       StarterKit,
+      TextAlign.configure({
+        types: ['heading', 'paragraph'],
+      }),
       Image
     ],
     content: `
