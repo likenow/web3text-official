@@ -365,7 +365,9 @@ const Editor = () => {
   return (
     <div>
       <MenuBar editor={editor} />
-      <EditorContent editor={editor} />
+      <div id='editorContainer'>
+        <EditorContent editor={editor} />
+      </div>
     </div>
   )
 }

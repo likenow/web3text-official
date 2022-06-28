@@ -5,11 +5,14 @@ import { ethers } from "ethers";
 import { get, subscribe } from "../store";
 import { connectWallet } from "./ConnectWallet";
 import showMessage from "./showMessage";
+// import { NFTStorage } from 'nft.storage';
+import { NFTStorage } from 'nft.storage/dist/bundle.esm.min.js';
+import html2canvas from 'html2canvas';
 
-const ETHERSCAN_DOMAIN =
-  process.env.NEXT_PUBLIC_CHAIN_ID === "1"
-    ? "etherscan.io"
-    : "rinkeby.etherscan.io";
+// const ETHERSCAN_DOMAIN =
+//   process.env.REACT_APP_CHAIN_ID === "1"
+//     ? "etherscan.io"
+//     : "rinkeby.etherscan.io";
 
 const StyledMintButton = styled.div`
   display: inline-block;
@@ -28,6 +31,64 @@ const StyledMintButton = styled.div`
   }};
 `;
 
+// https://html2canvas.hertzen.com/configuration
+async function texts2Image() {
+  let editorContainer = document.getElementById('editorContainer') as HTMLElement;
+  let opts = {
+    useCORS: true,
+    x: 0,
+    y: 0
+  }
+  html2canvas(editorContainer, opts).then(canvas => {
+      // document.body.appendChild(canvas);
+      canvas.toBlob(function(blob){
+        const data = blob as Blob
+        storeArticleNFT(data);
+      }, "image/jpeg", 0.95); // JPEG at 95% quality
+  });
+}
+
+async function storeArticleNFT(image: Blob) {
+  const nft = {
+    image, // use image Blob as `image` field
+    name: "texts",
+    description: "web3text"
+  }
+  const tk = process.env.REACT_APP_NFT_STORAGE_API_KEY;
+  console.log('tk = ', tk);
+  const client = new NFTStorage({ token: tk })
+  const metadata = await client.store(nft)
+  console.log('NFT data stored!')
+  console.log('Metadata URI: ', metadata.url)
+}
+
+// rewrite ipfs:// uris to dweb.link gateway URLs
+function makeGatewayURL(ipfsURI: string) {
+  return ipfsURI.replace(/^ipfs:\/\//, "https://dweb.link/ipfs/");
+}
+
+async function fetchIPFSJSON(ipfsURI: string) {
+  const url = makeGatewayURL(ipfsURI);
+  try {
+    const resp = await fetch(url);
+    let result = resp.json();
+    // console.log('result = ', result);
+    return result;
+  } catch (error) {
+    console.log('fetchIPFSJSON error = ', error);
+  }
+  
+}
+
+async function getArticleNFT(ipfsURI: string) {
+  let metadata = await fetchIPFSJSON(ipfsURI) as any;
+  // image url
+  if (metadata) {
+    let image = makeGatewayURL(metadata.image)
+    console.log('image = ', image);
+  }
+}
+
 function MintButton(props: any) {
   const [minting, setMinting] = useState(false);
 
@@ -41,39 +102,43 @@ function MintButton(props: any) {
         }
         setMinting(true);
         try {
-          const { signer, contract } = await connectWallet();
-          const contractWithSigner = contract.connect(signer);
-          const value = ethers.utils.parseEther(
-            props.mintAmount === 1 ? "0.01" : "0.02"
-          );
-          const tx = await contractWithSigner.mint(props.mintAmount, {
-            value,
-          });
-          const response = await tx.wait();
-          showMessage({
-            type: "success",
-            title: "铸造成功",
-            body: (
-              <div>
-                <a
-                  href={`https://${ETHERSCAN_DOMAIN}/tx/${response.transactionHash}`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  点击查看交易详情
-                </a>{" "}
-                或者到{" "}
-                <a
-                  href="https://opensea.io/account"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  OpenSea 查看
-                </a>
-                。
-              </div>
-            ),
-          });
+          getArticleNFT('ipfs://bafyreiaw3j2mpjk5linklxoocs3tcv2d2hdmk344zndieuajx3ocwjvv5u/metadata.json');
+          // texts2Image();
+
+
+          // const { signer, contract } = await connectWallet();
+          // const contractWithSigner = contract.connect(signer);
+          // const value = ethers.utils.parseEther(
+          //   props.mintAmount === 1 ? "0.01" : "0.02"
+          // );
+          // const tx = await contractWithSigner.mint(props.mintAmount, {
+          //   value,
+          // });
+          // const response = await tx.wait();
+          // showMessage({
+          //   type: "success",
+          //   title: "铸造成功",
+          //   body: (
+          //     <div>
+          //       <a
+          //         href={`https://${ETHERSCAN_DOMAIN}/tx/${response.transactionHash}`}
+          //         target="_blank"
+          //         rel="noreferrer"
+          //       >
+          //         点击查看交易详情
+          //       </a>{" "}
+          //       或者到{" "}
+          //       <a
+          //         href="https://opensea.io/account"
+          //         target="_blank"
+          //         rel="noreferrer"
+          //       >
+          //         OpenSea 查看
+          //       </a>
+          //       。
+          //     </div>
+          //   ),
+          // });
         } catch (err: any) {
           showMessage({
             type: "error",

@@ -11,7 +11,7 @@ import { formatAddress } from "../utils";
 // import RinkebyContractABI from "../abi/rinkeby.json";
 // import MainnetContractABI from "../abi/mainnet.json";
 
-// const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID;
+// const CHAIN_ID = process.env.REACT_APP_CHAIN_ID;
 // const NETWORK = CHAIN_ID === "1" ? "mainnet" : "rinkeby";
 // const contractABI = CHAIN_ID === "1" ? MainnetContractABI : RinkebyContractABI;
 
@@ -19,7 +19,7 @@ const providerOptions = {
   walletconnect: {
     package: WalletConnectProvider,
     options: {
-      infuraId: process.env.NEXT_PUBLIC_INFURA_PROJECT_ID,
+      infuraId: process.env.REACT_APP_INFURA_PROJECT_ID,
     },
   },
 };
@@ -27,7 +27,7 @@ const providerOptions = {
 let web3ModelInstance: any;
 if (typeof window !== "undefined") {
   web3ModelInstance = new Web3Modal({
-    network: process.env.NEXT_PUBLIC_CHAIN_ID === "1" ? "mainnet" : "rinkeby",
+    network: process.env.REACT_APP_CHAIN_ID === "1" ? "mainnet" : "rinkeby",
     cacheProvider: true,
     providerOptions,
   });
@@ -46,7 +46,7 @@ export async function connectWallet() {
     // https://docs.ethers.io/v5/api/signer/
     signer = provider.getSigner();
     // contract = new ethers.Contract(
-    //   process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+    //   process.env.REACT_APP_CONTRACT_ADDRESS,
     //   // 注意 ABI 的大小写
     //   contractABI.abi,
     //   provider
