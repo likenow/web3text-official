@@ -7,6 +7,7 @@ import Image from '@tiptap/extension-image';
 import Underline from '@tiptap/extension-underline';
 import { Color } from '@tiptap/extension-color';
 import TextStyle from '@tiptap/extension-text-style';
+import Link from '@tiptap/extension-link';
 import { generateHTML, generateJSON } from '@tiptap/html';
 import React, { useEffect, useCallback, useState, useMemo } from 'react';
 import { IconButton } from '@mui/material';
@@ -29,12 +30,7 @@ import DataObjectIcon from '@mui/icons-material/DataObject';
 import FormatColorTextIcon from '@mui/icons-material/FormatColorText';
 import FormatUnderlinedIcon from '@mui/icons-material/FormatUnderlined';
 import FormatClearIcon from '@mui/icons-material/FormatClear';
-import TranslateIcon from '@mui/icons-material/Translate';
 import AddLinkIcon from '@mui/icons-material/AddLink';
-import FileDownloadIcon from '@mui/icons-material/FileDownload';
-import FileUploadIcon from '@mui/icons-material/FileUpload';
-import FileDownloadOffIcon from '@mui/icons-material/FileDownloadOff';
-
 import Mint from './Mint';
 
 
@@ -46,7 +42,23 @@ const MenuBar = ({ editor } : any) => {
     }
     editor.setEditable(editable)
   }, [editor, editable])
-  
+
+  const setLink = useCallback(() => {
+    const previousUrl = editor.getAttributes('link').href
+    const url = window.prompt('URL', previousUrl)
+    // cancelled
+    if (url === null) {
+      return
+    }
+    // empty
+    if (url === '') {
+      editor.chain().focus().extendMarkRange('link').unsetLink().run()
+      return
+    }
+    // update link
+    editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run()
+  }, [editor])
+
   const addImage = useCallback(() => {
     const url = window.prompt('URL')
     if (url) {
@@ -220,6 +232,9 @@ const MenuBar = ({ editor } : any) => {
       <IconButton onClick={addImage}> 
         <AddPhotoAlternateIcon />
       </IconButton>
+      <IconButton onClick={setLink}>
+        <AddLinkIcon />
+      </IconButton>
       <br />
       <div>
         <IconButton>
@@ -279,22 +294,6 @@ const MenuBar = ({ editor } : any) => {
         <button onClick={() => editor.chain().focus().unsetColor().run()}>unsetColor</button>
       </div>
       <br />
-      <IconButton>
-        <AddLinkIcon />
-      </IconButton>
-      <IconButton>
-      <FileDownloadOffIcon />
-      </IconButton>
-      <IconButton>
-      <FileUploadIcon />
-      </IconButton>
-      <IconButton>
-      <FileDownloadIcon />
-      </IconButton>
-      <IconButton>
-        <TranslateIcon />
-      </IconButton>
-      <br />
       <button onClick={htmlExport}> Export HTML </button>
       <button onClick={htmlImport}> Import HTML </button>
       <button onClick={jsonExport}> Export JSON </button>
@@ -326,6 +325,10 @@ const Editor = () => {
       Image,
       TextStyle,
       Color,
+      Link.configure({
+        protocols: ['ftp', 'mailto'],
+        openOnClick: false,
+      }),
       Underline
     ],
     content: `

@@ -95,7 +95,7 @@ function ConnectWallet(props: any) {
   }
 
   return (
-    <div style={{ position: "relative" }}>
+    <>
       <Chip
         style={{ fontSize: 16 }}
         label={loading ? "连接中..." : "连接钱包"}
@@ -137,7 +137,7 @@ function ConnectWallet(props: any) {
           setLoading(false);
         }}
       />
-    </div>
+    </>
   );
 }
 

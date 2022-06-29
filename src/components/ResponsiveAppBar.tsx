@@ -12,6 +12,10 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import FileUploadIcon from '@mui/icons-material/FileUpload';
+import FileDownloadOffIcon from '@mui/icons-material/FileDownloadOff';
+import TranslateIcon from '@mui/icons-material/Translate';
 import { useState, useEffect } from "react";
 import { get, subscribe } from "../store";
 import ConnectWallet, { connectWallet } from "./ConnectWallet";
@@ -60,6 +64,18 @@ function ConnectSection() {
   
   return (
     <>
+      <IconButton>
+        <FileDownloadOffIcon />
+      </IconButton>
+      <IconButton>
+        <FileUploadIcon />
+      </IconButton>
+      <IconButton>
+        <FileDownloadIcon />
+      </IconButton>
+      <IconButton>
+        <TranslateIcon />
+      </IconButton>
       <ConnectWallet />{" "}
     </>
   );
