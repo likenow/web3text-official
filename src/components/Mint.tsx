@@ -8,6 +8,27 @@ import showMessage from "./showMessage";
 // import { NFTStorage } from 'nft.storage';
 import { NFTStorage } from 'nft.storage/dist/bundle.esm.min.js';
 import html2canvas from 'html2canvas';
+import Typography from '@mui/material/Typography';
+import Dialog from '@mui/material/Dialog';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import CheckIcon from '@mui/icons-material/Check';
+import Slide from '@mui/material/Slide';
+import TextField from '@mui/material/TextField';
+import { TransitionProps } from '@mui/material/transitions';
+import Container from '@mui/material/Container';
+
+const Transition = React.forwardRef(function Transition(
+  props: TransitionProps & {
+    children: React.ReactElement;
+  },
+  ref: React.Ref<unknown>,
+) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
 
 // const ETHERSCAN_DOMAIN =
 //   process.env.REACT_APP_CHAIN_ID === "1"
@@ -84,78 +105,151 @@ async function getArticleNFT(ipfsURI: string) {
   let metadata = await fetchIPFSJSON(ipfsURI) as any;
   // image url
   if (metadata) {
-    let image = makeGatewayURL(metadata.image)
-    console.log('image = ', image);
+    let url = makeGatewayURL(metadata.image)
+    let img = document.getElementById('articleIMG') as HTMLImageElement;
+    if (url) {
+      img.src = url;
+    }
+    // console.log('image = ', url);
   }
 }
 
 function MintButton(props: any) {
   const [minting, setMinting] = useState(false);
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+    getArticleNFT('ipfs://bafyreiaw3j2mpjk5linklxoocs3tcv2d2hdmk344zndieuajx3ocwjvv5u/metadata.json');
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   return (
-    <StyledMintButton
-      disabled={!!props.disabled}
-      minting={minting}
-      onClick={async () => {
-        if (minting || props.disabled) {
-          return;
-        }
-        setMinting(true);
-        try {
-          getArticleNFT('ipfs://bafyreiaw3j2mpjk5linklxoocs3tcv2d2hdmk344zndieuajx3ocwjvv5u/metadata.json');
-          // texts2Image();
-
-
-          // const { signer, contract } = await connectWallet();
-          // const contractWithSigner = contract.connect(signer);
-          // const value = ethers.utils.parseEther(
-          //   props.mintAmount === 1 ? "0.01" : "0.02"
-          // );
-          // const tx = await contractWithSigner.mint(props.mintAmount, {
-          //   value,
-          // });
-          // const response = await tx.wait();
-          // showMessage({
-          //   type: "success",
-          //   title: "铸造成功",
-          //   body: (
-          //     <div>
-          //       <a
-          //         href={`https://${ETHERSCAN_DOMAIN}/tx/${response.transactionHash}`}
-          //         target="_blank"
-          //         rel="noreferrer"
-          //       >
-          //         点击查看交易详情
-          //       </a>{" "}
-          //       或者到{" "}
-          //       <a
-          //         href="https://opensea.io/account"
-          //         target="_blank"
-          //         rel="noreferrer"
-          //       >
-          //         OpenSea 查看
-          //       </a>
-          //       。
-          //     </div>
-          //   ),
-          // });
-        } catch (err: any) {
-          showMessage({
-            type: "error",
-            title: "铸造失败",
-            body: err.message,
-          });
-        }
-        props.onMinted && props.onMinted();
-        setMinting(false);
-      }}
-      style={{
-        background: "#fff",
-        ...props.style,
-      }}
-    >
-      铸造文章 NFT{minting ? "中..." : ""}
-    </StyledMintButton>
+    <div>
+      <StyledMintButton
+        disabled={!!props.disabled}
+        minting={minting}
+        onClick={handleClickOpen}
+        style={{
+          background: "#fff",
+          ...props.style,
+        }}
+      >
+        铸造文章 NFT{minting ? "中..." : ""}
+      </StyledMintButton>
+      
+      <Dialog
+        fullScreen
+        open={open}
+        onClose={handleClose}
+        TransitionComponent={Transition}
+      >
+        <AppBar sx={{ position: 'relative' }}>
+          <Toolbar>
+            <IconButton
+              edge="start"
+              color="inherit"
+              onClick={handleClose}
+              aria-label="close"
+              sx={{ ml: 2 }}
+            >
+              <CloseIcon />
+            </IconButton>
+            <Typography sx={{ ml: 1, flexGrow: 1}} variant="h6" component="div">
+              Close
+            </Typography>
+            
+            <IconButton
+              color="inherit"
+              sx={{ ml: 2 }}
+              onClick={async () => {
+                if (minting || props.disabled) {
+                  return;
+                }
+                setMinting(true);
+                try {
+                  // texts2Image();
+                  
+                  // const { signer, contract } = await connectWallet();
+                  // const contractWithSigner = contract.connect(signer);
+                  // const value = ethers.utils.parseEther(
+                  //   props.mintAmount === 1 ? "0.01" : "0.02"
+                  // );
+                  // const tx = await contractWithSigner.mint(props.mintAmount, {
+                  //   value,
+                  // });
+                  // const response = await tx.wait();
+                  // showMessage({
+                  //   type: "success",
+                  //   title: "铸造成功",
+                  //   body: (
+                  //     <div>
+                  //       <a
+                  //         href={`https://${ETHERSCAN_DOMAIN}/tx/${response.transactionHash}`}
+                  //         target="_blank"
+                  //         rel="noreferrer"
+                  //       >
+                  //         点击查看交易详情
+                  //       </a>{" "}
+                  //       或者到{" "}
+                  //       <a
+                  //         href="https://opensea.io/account"
+                  //         target="_blank"
+                  //         rel="noreferrer"
+                  //       >
+                  //         OpenSea 查看
+                  //       </a>
+                  //       。
+                  //     </div>
+                  //   ),
+                  // });
+                } catch (err: any) {
+                  showMessage({
+                    type: "error",
+                    title: "铸造失败",
+                    body: err.message,
+                  });
+                }
+                props.onMinted && props.onMinted();
+                setMinting(false);
+              }}
+            >
+              <CheckIcon />
+            </IconButton>
+            <Typography sx={{ ml: 1}} variant="h6" component="div">
+              Mint
+            </Typography>
+          </Toolbar>
+        </AppBar>
+        <Container sx={{maxWidth: 'sm'}}>
+          <TextField
+            required
+            autoFocus
+            id="outlined-required"
+            label="Required"
+            placeholder="Title"
+            helperText="Title.(< 50 characters)"
+            sx={{ mt: 5, mb: 2, width: '100%'}}
+          />
+          <TextField
+            required
+            id="outlined-required"
+            label="Required"
+            placeholder="Description of your Article"
+            helperText="Description.(< 150 characters)"
+            multiline
+            maxRows={4}
+            sx={{ mb: 5, width: '100%'}}
+          />
+        </Container>
+        
+        <img id='articleIMG'></img>
+        
+      </Dialog>
+    </div>
   );
 }
 

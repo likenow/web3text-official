@@ -4,6 +4,7 @@ import { ethers } from "ethers";
 import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import Chip from "@mui/material/Chip";
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 
 import showMessage from "./showMessage";
 import { set, get, subscribe } from "../store";
@@ -97,6 +98,7 @@ function ConnectWallet(props: any) {
   return (
     <>
       <Chip
+        icon={<AccountBalanceWalletIcon />}
         style={{ fontSize: 16 }}
         label={loading ? "连接中..." : "连接钱包"}
         color="primary"
