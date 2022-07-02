@@ -137,9 +137,9 @@ const MenuBar = ({ editor } : any) => {
   return (
     <div
       style={{
-        marginTop: "5%",
-        marginLeft: "15%",
-        marginBottom: "5%"
+        marginTop: '5%',
+        marginLeft: '15%',
+        marginBottom: '5%'
       }}
     >
       <IconButton onClick={() => editor.chain().focus().setTextAlign('center').run()} className={editor.isActive({ textAlign: 'center' }) ? 'is-active' : ''} aria-label="center">

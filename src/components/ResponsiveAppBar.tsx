@@ -7,17 +7,16 @@ import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import FileDownloadOffIcon from '@mui/icons-material/FileDownloadOff';
 import TranslateIcon from '@mui/icons-material/Translate';
-import { useState, useEffect } from "react";
-import { get, subscribe } from "../store";
-import ConnectWallet, { connectWallet } from "./ConnectWallet";
-import showMessage from "./showMessage";
+import { useState, useEffect } from 'react';
+import { get, subscribe } from '../store';
+import ConnectWallet, { connectWallet } from './ConnectWallet';
+import showMessage from './showMessage';
 
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
@@ -27,15 +26,15 @@ function ConnectSection() {
 
   useEffect(() => {
     (async () => {
-      const fullAddressInStore = get("fullAddress") || null;
+      const fullAddressInStore = get('fullAddress') || null;
       if (fullAddressInStore) {
         const { contract } = await connectWallet();
         // const numberMinted = await contract.numberMinted(fullAddressInStore);
         // setNumberMinted(parseInt(numberMinted));
         setFullAddress(fullAddressInStore);
       }
-      subscribe("fullAddress", async () => {
-        const fullAddressInStore = get("fullAddress") || null;
+      subscribe('fullAddress', async () => {
+        const fullAddressInStore = get('fullAddress') || null;
         setFullAddress(fullAddressInStore);
         if (fullAddressInStore) {
           // const { contract } = await connectWallet();
@@ -46,14 +45,14 @@ function ConnectSection() {
 
   useEffect(() => {
     try {
-      const fullAddressInStore = get("fullAddress") || null;
+      const fullAddressInStore = get('fullAddress') || null;
       if (fullAddressInStore) {
         // const { contract } = await connectWallet();
       }
     } catch (err: any) {
       showMessage({
-        type: "error",
-        title: "获取合约状态失败",
+        type: 'error',
+        title: '获取合约状态失败',
         body: err.message,
       });
     }
@@ -61,7 +60,7 @@ function ConnectSection() {
   
   return (
     <>
-      <ConnectWallet />{" "}
+      <ConnectWallet />{' '}
     </>
   );
 }
@@ -82,7 +81,7 @@ const ResponsiveAppBar = () => {
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Box sx={{ flexGrow: 1}}>
-            <Avatar alt="logo" src="/logo192.png" />
+            <img alt="logo" src="/logo.png" />
           </Box>
           <Box>
             <Tooltip title="Open settings">

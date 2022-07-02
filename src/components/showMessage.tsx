@@ -1,10 +1,10 @@
-import React from "react";
-import ReactDOM from "react-dom";
+import React from 'react';
+import ReactDOM from 'react-dom';
 
-import Dialog from "@mui/material/Dialog";
-import styled from "@emotion/styled";
-import ErrorIcon from "@mui/icons-material/Error";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import Dialog from '@mui/material/Dialog';
+import styled from '@emotion/styled';
+import ErrorIcon from '@mui/icons-material/Error';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 const IconWrapper = styled.div``;
 
@@ -44,19 +44,19 @@ function SimpleModal(props: any) {
       <DialogWrapper>
         {props.type && (
           <IconWrapper>
-            {props.type === "success" ? (
+            {props.type === 'success' ? (
               <CheckCircleIcon
                 sx={{
-                  fontSize: "40px",
+                  fontSize: '40px',
                 }}
-                color="success"
+                color='success'
               ></CheckCircleIcon>
             ) : (
               <ErrorIcon
                 sx={{
-                  fontSize: "40px",
+                  fontSize: '40px',
                 }}
-                color="error"
+                color='error'
               ></ErrorIcon>
             )}
           </IconWrapper>
