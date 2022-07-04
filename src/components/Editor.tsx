@@ -32,10 +32,12 @@ import FormatUnderlinedIcon from '@mui/icons-material/FormatUnderlined';
 import FormatClearIcon from '@mui/icons-material/FormatClear';
 import AddLinkIcon from '@mui/icons-material/AddLink';
 import Mint from './Mint';
+// import { convertImgToBase64URL } from '../utils';
 
 
 const MenuBar = ({ editor } : any) => {
-  const [editable, setEditable] = useState<boolean>(false)
+  const [editable, setEditable] = useState<boolean>(false);
+  const [fileDownloadUrl, setFileDownloadUrl] = useState<string>('');
   useEffect(() => {
     if (!editor) {
       return undefined
@@ -60,9 +62,12 @@ const MenuBar = ({ editor } : any) => {
   }, [editor])
 
   const addImage = useCallback(() => {
-    const url = window.prompt('URL')
+    const url = window.prompt('URL');
     if (url) {
-      editor.chain().focus().setImage({ src: url }).run()
+      // convertImgToBase64URL(url, 'image/png', function(base64Img){
+      //   editor.chain().focus().setImage({ src: base64Img }).run();
+      // });
+      editor.chain().focus().setImage({ src: url }).run();
     }
   }, [editor])
   const htmlExample = '<p>Example <strong>Text</strong></p>'
@@ -101,11 +106,26 @@ const MenuBar = ({ editor } : any) => {
   const jsonImport = useCallback(() => {
     editor.commands.setContent(jsonExample)
   }, [editor])
-
+  
   const jsonExport = useCallback(() => {
-    let content = editor.getJSON()
-    console.log(content)
-    return content
+    const a: HTMLAnchorElement = document.createElement('a');
+    document.body.appendChild(a);
+    let content = editor.getJSON();
+    // Prepare the file
+    let output = JSON.stringify(content, null, 4);
+    // console.log(output);
+    const blob = new Blob([output], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    setFileDownloadUrl(url);
+    // console.log(url);
+    a.download = 'yourArticle.json';
+    a.href = url;
+    a.setAttribute('style', 'display: none');
+    a.click();
+    a.remove();
+    // free up storage--no longer needed.
+    URL.revokeObjectURL(url);
+    setFileDownloadUrl('');
   }, [editor])
 
   const generateHTMLFromJSON = useMemo(() => {
@@ -322,7 +342,9 @@ const Editor = () => {
       TextAlign.configure({
         types: ['heading', 'paragraph'],
       }),
-      Image,
+      Image.configure({
+        allowBase64: true
+      }),
       TextStyle,
       Color,
       Link.configure({

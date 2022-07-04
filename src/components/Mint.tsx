@@ -58,17 +58,19 @@ const StyledMintButton = styled.div`
 `;
 
 async function storeArticleNFT(image: Blob) {
-  const nft = {
-    image, // use image Blob as `image` field
-    name: 'texts',
-    description: 'web3text'
-  }
-  const tk = process.env.REACT_APP_NFT_STORAGE_API_KEY;
-  console.log('tk = ', tk);
-  const client = new NFTStorage({ token: tk })
-  const metadata = await client.store(nft)
-  console.log('NFT data stored!')
-  console.log('Metadata URI: ', metadata.url)
+  const url = URL.createObjectURL(image);
+  console.log('storeArticleNFT = ', url);
+  // const nft = {
+  //   image, // use image Blob as `image` field
+  //   name: 'texts',
+  //   description: 'web3text'
+  // }
+  // const tk = process.env.REACT_APP_NFT_STORAGE_API_KEY;
+  // console.log('tk = ', tk);
+  // const client = new NFTStorage({ token: tk })
+  // const metadata = await client.store(nft)
+  // console.log('NFT data stored!')
+  // console.log('Metadata URI: ', metadata.url)
 }
 
 // rewrite ipfs:// uris to dweb.link gateway URLs
@@ -105,22 +107,26 @@ async function getArticleNFT(ipfsURI: string) {
 }
 
 function saveImageFromCanvas(canvas: any) {
-  canvas.toBlob(function(blob: any){
-    const data = blob as Blob;
-    storeArticleNFT(data);
-  }, "image/jpeg", 0.95); // JPEG at 95% quality
+  if (canvas) {
+    canvas.toBlob(function(blob: any){
+      const data = blob as Blob;
+      storeArticleNFT(data);
+    }, "image/jpeg", 0.95); // JPEG at 95% quality
+  }
 }
 
 function MintButton(props: any) {
   const [minting, setMinting] = useState(false);
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [showMsg, setShowMsg] = useState(false);
   const [hud, setHud] = useState(false);
-
+  const [articleCanvas, setArticleCanvas] = useState(null);
+  
   // https://html2canvas.hertzen.com/configuration
   async function texts2Image() {
     setOpen(true);
+    setLoading(true);
     let editorContainer = document.getElementById('editorContainer') as HTMLElement;
     let opts = {
       useCORS: true,
@@ -129,9 +135,11 @@ function MintButton(props: any) {
     }
     html2canvas(editorContainer, opts).then(canvas => {
       if (canvas) {
+        const c = canvas as any;
+        setArticleCanvas(c);
         let preview = document.getElementById('preview_texts_canvas') as HTMLElement;
         // console.log(preview);
-        preview.appendChild(canvas);
+        preview.appendChild(c);
         setLoading(false);
       } else {
         setShowMsg(true);
@@ -141,6 +149,7 @@ function MintButton(props: any) {
 
   const handleClose = () => {
     setOpen(false);
+    setLoading(false);
   };
 
   return (
@@ -206,6 +215,7 @@ function MintButton(props: any) {
                 }
                 setHud(true);
                 setMinting(true);
+                saveImageFromCanvas(articleCanvas);
                 try {
                   // const { signer, contract } = await connectWallet();
                   // const contractWithSigner = contract.connect(signer);
