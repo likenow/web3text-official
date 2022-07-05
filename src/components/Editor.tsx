@@ -358,7 +358,7 @@ const Editor = () => {
         Hi there,
       </h2>
       <p>
-        this is a <em>basic</em> example of <strong>tiptap</strong>. Sure, there are all kind of basic text styles you’d probably expect from a text editor. But wait until you see the lists:
+        this is a <em>basic</em> example of <strong>Prosemirror</strong>. Sure, there are all kind of basic text styles you’d probably expect from a text editor. But wait until you see the lists:
       </p>
       <ul>
         <li>
@@ -384,6 +384,18 @@ const Editor = () => {
       </blockquote>
       <p>This is a basic example of implementing images. Drag to re-order.</p>
       <img src="https://source.unsplash.com/8xznAGy4HcY/800x400" />
+      <p>
+      在理解合约以及 DApp 使用何种方式与区块链进行交互后，开发者很快会意识到，我们并没有通过在本地建立一个节点的方式来与区块链进行操作。如果你在本地部署过 IPFS，你会很快发现它会默认在本地同步节点，就像 BT 下载软件那样。这是否意味着我们的 DApp 不够「去中心化」呢？
+      </p>
+      <p>
+      实际上，仍然有大量的软件基于本地的全节点来进行交互，只是，对于大部分开发者而言，他们放弃了这样的权利，而转而使用更便利的 Relay Network 与区块链进行通信，通过这种方式，我们节省了部署成本，并且不再需要维护节点的状态缓存，对于快速构建 DApp 来说，选择一个靠谱的 Relay，是无可非议的方案。
+      </p>
+      <p>
+      使用 Relay Network 不需要特殊的知识，在前端，我们使用上述提及的代码库（ethers.js 或者 web3.js）与 Relay 进行交互；在服务端，如果你使用 Node 运行环境，也可以直接拷贝前端的代码来使用。如果你使用其他的运行环境，你可能会需要一些特定的 JSON-RPC 函数包装，以访问这些 Relay。
+      </p>
+      <p>
+      Infura 是世界上最早和最大的以太坊 Relay Network，它提供一些公开的 Gateway 节点，但一般来说，我们需要获取属于自己的 DApp Access Key 并为这些访问权限设置 origin 和 IP 限制，以提升使用我们自己的 DApp 用户的访问速度体验。Infura 目前支持 ETH，ETH2 网络，以及 IPFS 和 Filecoin 两个分布式储存方案。
+      </p>
     `,
   });
 
