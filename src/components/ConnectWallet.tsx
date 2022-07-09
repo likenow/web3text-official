@@ -9,12 +9,13 @@ import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import showMessage from './showMessage';
 import { set, get, subscribe } from '../store';
 import { formatAddress } from '../utils';
-// import RinkebyContractABI from '../abi/rinkeby.json';
-// import MainnetContractABI from '../abi/mainnet.json';
+import RinkebyContractABI from '../abi/rinkeby.json';
+import MainnetContractABI from '../abi/mainnet.json';
 
-// const CHAIN_ID = process.env.REACT_APP_CHAIN_ID;
-// const NETWORK = CHAIN_ID === '1' ? 'mainnet' : 'rinkeby';
-// const contractABI = CHAIN_ID === '1' ? MainnetContractABI : RinkebyContractABI;
+const CHAIN_ID = process.env.REACT_APP_CHAIN_ID;
+const NETWORK = CHAIN_ID === '1' ? 'mainnet' : 'rinkeby';
+const contractABI = CHAIN_ID === '1' ? MainnetContractABI : RinkebyContractABI;
+const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS as string;
 
 const providerOptions = {
   walletconnect: {
@@ -28,7 +29,7 @@ const providerOptions = {
 let web3ModelInstance: any;
 if (typeof window !== 'undefined') {
   web3ModelInstance = new Web3Modal({
-    network: process.env.REACT_APP_CHAIN_ID === '1' ? 'mainnet' : 'rinkeby',
+    network: NETWORK,
     cacheProvider: true,
     providerOptions,
   });
@@ -46,12 +47,11 @@ export async function connectWallet() {
     provider = new ethers.providers.Web3Provider(instance);
     // https://docs.ethers.io/v5/api/signer/
     signer = provider.getSigner();
-    // contract = new ethers.Contract(
-    //   process.env.REACT_APP_CONTRACT_ADDRESS,
-    //   // 注意 ABI 的大小写
-    //   contractABI.abi,
-    //   provider
-    // );
+    contract = new ethers.Contract(
+      contractAddress,
+      contractABI.abi,
+      provider
+    );
   }
 
   return { provider, signer, web3Instance: instance, contract };

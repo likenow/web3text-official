@@ -354,48 +354,20 @@ const Editor = () => {
       Underline
     ],
     content: `
-      <h2>
-        Hi there,
-      </h2>
-      <p>
-        this is a <em>basic</em> example of <strong>Prosemirror</strong>. Sure, there are all kind of basic text styles you’d probably expect from a text editor. But wait until you see the lists:
-      </p>
-      <ul>
-        <li>
-          That’s a bullet list with one …
-        </li>
-        <li>
-          … or two list items.
-        </li>
-      </ul>
-      <p>
-        Isn’t that great? And all of that is editable. But wait, there’s more. Let’s try a code block:
-      </p>
-      <pre><code class="language-css">body {
-  display: none;
-}</code></pre>
-      <p>
-        I know, I know, this is impressive. It’s only the tip of the iceberg though. Give it a try and click a little bit around. Don’t forget to check the other examples too.
-      </p>
-      <blockquote>
-        Wow, that’s amazing. Good work, boy! 👏
-        <br />
-        — Mom
-      </blockquote>
-      <p>This is a basic example of implementing images. Drag to re-order.</p>
-      <img src="https://source.unsplash.com/8xznAGy4HcY/800x400" />
-      <p>
-      在理解合约以及 DApp 使用何种方式与区块链进行交互后，开发者很快会意识到，我们并没有通过在本地建立一个节点的方式来与区块链进行操作。如果你在本地部署过 IPFS，你会很快发现它会默认在本地同步节点，就像 BT 下载软件那样。这是否意味着我们的 DApp 不够「去中心化」呢？
-      </p>
-      <p>
-      实际上，仍然有大量的软件基于本地的全节点来进行交互，只是，对于大部分开发者而言，他们放弃了这样的权利，而转而使用更便利的 Relay Network 与区块链进行通信，通过这种方式，我们节省了部署成本，并且不再需要维护节点的状态缓存，对于快速构建 DApp 来说，选择一个靠谱的 Relay，是无可非议的方案。
-      </p>
-      <p>
-      使用 Relay Network 不需要特殊的知识，在前端，我们使用上述提及的代码库（ethers.js 或者 web3.js）与 Relay 进行交互；在服务端，如果你使用 Node 运行环境，也可以直接拷贝前端的代码来使用。如果你使用其他的运行环境，你可能会需要一些特定的 JSON-RPC 函数包装，以访问这些 Relay。
-      </p>
-      <p>
-      Infura 是世界上最早和最大的以太坊 Relay Network，它提供一些公开的 Gateway 节点，但一般来说，我们需要获取属于自己的 DApp Access Key 并为这些访问权限设置 origin 和 IP 限制，以提升使用我们自己的 DApp 用户的访问速度体验。Infura 目前支持 ETH，ETH2 网络，以及 IPFS 和 Filecoin 两个分布式储存方案。
-      </p>
+    <h1>NFT</h1>
+    <blockquote>
+    <p>维基百科</p>
+    </blockquote>
+    <p>
+    <strong>非同质化代币</strong> 
+    <span style="color: rgb(32, 33, 34)">（英语：</span><code>Non-Fungible Token</code><span style="color: rgb(32, 33, 34)">，简称：</span> <strong>NFT</strong> <span style="color: rgb(32, 33, 34)">），是一种被称为</span> <a target="_blank" rel="noopener noreferrer nofollow" href="https://zh.m.wikipedia.org/wiki/%E5%8C%BA%E5%9D%97%E9%93%BE">区块链</a> <span style="color: rgb(32, 33, 34)">数位账本上的数据单位，每个代币可以代表一个独特的</span> <a target="_blank" rel="noopener noreferrer nofollow" href="https://zh.m.wikipedia.org/wiki/%E6%95%B8%E7%A2%BC%E8%B3%87%E6%96%99">数码资料</a> <span style="color: rgb(32, 33, 34)">，作为虚拟商品所有权的电子认证或凭证。由于其不能互换的特性，非同质化代币可以代表数位资产，如：</span></p><ul><li><p> <a target="_blank" rel="noopener noreferrer nofollow" href="https://zh.m.wikipedia.org/wiki/%E7%BB%98%E7%94%BB">画作</a> </p></li><li><p><a target="_blank" rel="noopener noreferrer nofollow" href="https://zh.m.wikipedia.org/wiki/%E8%97%9D%E8%A1%93%E5%93%81">艺术品</a> </p></li><li><p> <a target="_blank" rel="noopener noreferrer nofollow" class="mw-redirect" href="https://zh.m.wikipedia.org/wiki/%E8%81%B2%E9%9F%B3">声音</a> </p></li><li><p> <a target="_blank" rel="noopener noreferrer nofollow" href="https://zh.m.wikipedia.org/wiki/%E8%A7%86%E9%A2%91">影片</a> </p></li><li><p> <a target="_blank" rel="noopener noreferrer nofollow" href="https://zh.m.wikipedia.org/wiki/%E6%B8%B8%E6%88%8F">游戏</a> </p></li></ul><p><span style="color: rgb(32, 33, 34)">中的项目或其他形式的创意作品。虽然作品本身是可以无限复制的，但这些代表它们的代币在其底层区块链上能被完整追踪，故能为买家提供所有权证明。</span> <a target="_blank" rel="noopener noreferrer nofollow" href="https://zh.m.wikipedia.org/zh-hans/NFT#cite_note-%2469_million_for_digital_art?-1">[1]</a> <a target="_blank" rel="noopener noreferrer nofollow" href="https://zh.m.wikipedia.org/zh-hans/NFT#cite_note-Forbes_2021-02-28-2">[2]</a> <a target="_blank" rel="noopener noreferrer nofollow" href="https://zh.m.wikipedia.org/zh-hans/NFT#cite_note-3">[3]</a> <span style="color: rgb(32, 33, 34)">诸如</span><a target="_blank" rel="noopener noreferrer nofollow" href="https://zh.m.wikipedia.org/wiki/%E4%BB%A5%E5%A4%AA%E5%9D%8A">以太币</a> <span style="color: rgb(32, 33, 34)">、</span><a target="_blank" rel="noopener noreferrer nofollow" href="https://zh.m.wikipedia.org/wiki/%E6%AF%94%E7%89%B9%E5%B8%81">比特币</a> <span style="color: rgb(32, 33, 34)">等</span><a target="_blank" rel="noopener noreferrer nofollow" href="https://zh.m.wikipedia.org/wiki/%E5%8A%A0%E5%AF%86%E8%B2%A8%E5%B9%A3">加密货币</a> <span style="color: rgb(32, 33, 34)">都有自己的代币标准以定义对</span><em><span style="color: rgb(32, 33, 34)">NFT</span></em><span style="color: rgb(32, 33, 34)">的使用</span><a target="_blank" rel="noopener noreferrer nofollow" href="https://zh.m.wikipedia.org/zh-hans/NFT#cite_note-4">[4]</a> <span style="color: rgb(32, 33, 34)">。</span></p><p>非同质化代币是一种储存在区块链（数位账本）上的数据单位，它可以代表艺术品等独一无二的数位资产。 其是一种<u>加密代币</u>，但与比特币等加密货币不同，其不可互换。 一个非同质化代币是透过上传一个文件，如艺术品，到非同质化代币拍卖市场，此举将创建一个记录在数位账本上的文件副本，以作为非同质化代币，可以透过加密货币来购买和转售。 虽然创作者可以出售代表该作品的非同质化代币，但他们仍然可以保留作品的版权，并创造更多的同一作品的非同质化代币。 非同质化代币的买家并不能获得对作品的独家访问权，买家也不能获得对原始数位文件的独占性。 将某一作品作为非同质化代币上传的人不必证明他们是原创艺术家，在许多争议案例中，在未经创作者许可的情况下，艺术品被盗用于非同质化代币。
+    </p>
+    <p></p>
+    <h2>Non-fungible token</h2>
+    <blockquote><p><span style="color: rgb(32, 33, 34)">From Wikipedia, the free encyclopedia</span></p></blockquote>
+    <p>
+    A <strong>non-fungible token</strong> (<strong>NFT</strong>) is a <a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Security_(finance)">financial security</a> consisting of digital data stored in a <a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Blockchain">blockchain</a>, a form of <a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Distributed_ledger">distributed ledger</a>. The ownership of an NFT is recorded in the blockchain, and can be transferred by the owner, allowing NFTs to be sold and traded. NFTs can be created by anybody, and require few or no coding skills to create.<a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Non-fungible_token#cite_note-1">[1]</a> NFTs typically contain references to <a target="_blank" rel="noopener noreferrer nofollow" class="mw-redirect" href="https://en.wikipedia.org/wiki/Digital_file">digital files</a> such as</p><ul><li><p>photos</p></li><li><p>videos</p></li><li><p>audio</p></li><li><p>...</p></li></ul><p> Because NFTs are uniquely identifiable, they differ from <a target="_blank" rel="noopener noreferrer nofollow" class="mw-redirect" href="https://en.wikipedia.org/wiki/Cryptocurrencies">cryptocurrencies</a>, which are <a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Fungibility">fungible</a>. The <a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Market_value">market value</a> of an NFT is associated with the digital file it references.</p><p>Proponents of NFTs claim that NFTs provide a public <a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Certificate_of_authenticity">certificate of authenticity</a> or <a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Title_(property)">proof of ownership</a>, but the legal rights conveyed by an NFT can be uncertain. The ownership of an NFT as defined by the blockchain has no inherent legal meaning, and does not necessarily grant <a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Copyright">copyright</a>, <a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Intellectual_property">intellectual property</a> rights, or other legal rights over its associated digital file. An NFT does not restrict the sharing or copying of its associated digital file, and does not prevent the creation of NFTs that reference identical files.</p><p>The <strong>NFT</strong> market grew dramatically from 2020–2021: the trading of NFTs in 2021 increased to more than $17 billion, up by 21,000% over 2020's total of $82 million.<a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Non-fungible_token#cite_note-2">[2]</a> NFTs have been used as <a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Speculation">speculative</a> investments, and they have drawn increasing criticism for the energy cost and <a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Carbon_footprint">carbon footprint</a> associated with validating blockchain transactions as well as their frequent use in <a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Confidence_trick">art scams</a>.<a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Non-fungible_token#cite_note-3">[3]</a> The NFT market has also been compared to an <a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Economic_bubble">economic bubble</a> or a <a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Ponzi_scheme">Ponzi scheme</a>.<a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Non-fungible_token#cite_note-4">[4]</a> By May 2022, the NFT market was seen as beginning to collapse.<a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Non-fungible_token#cite_note-flatlining-5">[5]</a></p><p>
+    </p>
     `,
   });
 
