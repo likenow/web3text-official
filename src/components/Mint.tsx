@@ -22,6 +22,7 @@ import Box from '@mui/material/Box';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -69,6 +70,7 @@ function Mint() {
   const [nftDescription, setDescription] = useState("");
   const [nameVerified, setNameVerified] = useState(false);
   const [descriptionVerified, setDescriptionVerified] = useState(false);
+  const { t } = useTranslation(['ns1', 'ns2']);
 
   async function updateStatus() {
     const { contract } = await connectWallet();
@@ -343,7 +345,8 @@ function Mint() {
             background: '#fff'
           }}
         >
-          铸造文章 NFT{minting ? '中...' : ''}
+          {/* 铸造文章 NFT{minting ? '中...' : ''} */}
+          { t('ns1:mint') }
         </StyledMintButton>
       </div>
     );

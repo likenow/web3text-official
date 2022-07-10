@@ -18,6 +18,7 @@ import { useState, useEffect } from 'react';
 import { get, subscribe } from '../store';
 import ConnectWallet, { connectWallet } from './ConnectWallet';
 import showMessage from './showMessage';
+import { useTranslation } from 'react-i18next';
 
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
@@ -68,6 +69,7 @@ function ConnectSection() {
 
 const ResponsiveAppBar = () => {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+  const { i18n } = useTranslation();
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -83,6 +85,7 @@ const ResponsiveAppBar = () => {
         <Toolbar disableGutters>
           <Box sx={{ flexGrow: 1}}>
             <Button disableTouchRipple
+              href='/'
               style={{ backgroundColor: 'transparent', textTransform: 'none' }}
             >
               <img width={32} height={32} alt="Web3text" src="/logo192.png" />
@@ -126,7 +129,11 @@ const ResponsiveAppBar = () => {
             <IconButton>
               <FileDownloadIcon />
             </IconButton>
-            <IconButton>
+            <IconButton onClick={() => {
+              i18n.changeLanguage('zh', (err, t) => {
+                // console.log('something went wrong loading', err);
+              });
+            }}>
               <TranslateIcon />
             </IconButton>
           </Box>
