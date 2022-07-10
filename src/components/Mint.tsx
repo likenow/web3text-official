@@ -19,9 +19,9 @@ import { TransitionProps } from '@mui/material/transitions';
 import Skeleton from '@mui/material/Skeleton';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
-import CustomizedSnackbar from './CustomizedSnackbar';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
+import { useSnackbar } from 'notistack';
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -56,17 +56,19 @@ const StyledMintButton = styled.div`
 `;
 
 function Mint() {
+  const { enqueueSnackbar } = useSnackbar();
   const [status, setStatus] = useState('0');
   const [fullAddress, setFullAddress] = useState(null);
   const [numberMinted, setNumberMinted] = useState(0);
   const [minting, setMinting] = useState(false);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [showMsg, setShowMsg] = useState(false);
   const [hud, setHud] = useState(false);
   const [articleCanvas, setArticleCanvas] = useState(null);
   const [nftName, setName] = useState("");
   const [nftDescription, setDescription] = useState("");
+  const [nameVerified, setNameVerified] = useState(false);
+  const [descriptionVerified, setDescriptionVerified] = useState(false);
 
   async function updateStatus() {
     const { contract } = await connectWallet();
@@ -164,10 +166,12 @@ function Mint() {
       if (url) {
         mintArticle(url);
       } else {
-  
+        const message = 'Image url empty error';
+        enqueueSnackbar(message, { variant: 'error' });
       }
     } else {
-  
+      const message = 'Metadata empty error';
+      enqueueSnackbar(message, { variant: 'error' });
     }
   }
   
@@ -216,6 +220,22 @@ function Mint() {
   }
   
   function canvas2Blob(canvas: any) {
+    if (nftName.length == 0) {
+      setNameVerified(true);
+      return;
+    }
+    if (nftDescription.length == 0) {
+      setDescriptionVerified(true);
+      return;
+    }
+    if (nameVerified) {
+      return;
+    }
+    if (descriptionVerified) {
+      return;
+    }
+    setHud(true);
+    setMinting(true);
     if (canvas) {
       canvas.toBlob(function(blob: any){
         const data = blob as Blob;
@@ -223,7 +243,8 @@ function Mint() {
         console.log('canvas data == ', data);
       }, "image/jpeg", 0.95); // JPEG at 95% quality
     } else {
-      console.log('canvas empty');
+      const message = 'Canvas empty error';
+      enqueueSnackbar(message, { variant: 'error' });
     }
   }
 
@@ -246,7 +267,8 @@ function Mint() {
         preview.appendChild(c);
         setLoading(false);
       } else {
-        setShowMsg(true);
+        const message = 'Canvas empty error';
+        enqueueSnackbar(message, { variant: 'error' });
       }
     });
   }
@@ -257,64 +279,30 @@ function Mint() {
   };
 
   const handleName = (event: any) => {
+    // console.log('handleName = ', event.target.value);
+    if (event.target.value.length > 50) {
+      // console.log('超过字数限制 => ', event.target.value);
+      const message = 'Exceeds the word limit';
+      enqueueSnackbar(message, { variant: 'warning', preventDuplicate: true });
+      setNameVerified(true);
+      return;
+    }
     setName(event.target.value);
+    setNameVerified(false);
   }
 
   const handleDescription = (event: any) => {
+    // console.log('handleDescription = ', event.target.value);
+    if (event.target.value.length > 150) {
+      // console.log('超过字数限制 => ', event.target.value);
+      const message = 'Exceeds the word limit';
+      enqueueSnackbar(message, { variant: 'warning', preventDuplicate: true });
+      setDescriptionVerified(true);
+      return;
+    }
     setDescription(event.target.value);
+    setDescriptionVerified(false);
   }
-
-  let tipBar = (
-    <CustomizedSnackbar
-      type="error"
-      show={showMsg}
-      title="图片转换失败"
-      vertical="top"
-      horizontal="center"
-      onClose={()=> {
-        setShowMsg(false);
-      }}
-    />
-  );
-
-  tipBar = (
-    <CustomizedSnackbar
-      type="warning"
-      show={showMsg}
-      title="图片转换中请耐心等待"
-      vertical="top"
-      horizontal="center"
-      onClose={()=> {
-        setShowMsg(false);
-      }}
-    />
-  );
-
-  tipBar = (
-    <CustomizedSnackbar
-      type="info"
-      show={showMsg}
-      title="图片转换中"
-      vertical="top"
-      horizontal="center"
-      onClose={()=> {
-        setShowMsg(false);
-      }}
-    />
-  );
-
-  tipBar = (
-    <CustomizedSnackbar
-      type="success"
-      show={showMsg}
-      title="图片转换成功"
-      vertical="top"
-      horizontal="center"
-      onClose={()=> {
-        setShowMsg(false);
-      }}
-    />
-  );
 
   let mintButton = (
     <StyledMintButton
@@ -363,7 +351,6 @@ function Mint() {
   
   return (
     <div>
-      {tipBar}
       {mintButton}
       <Dialog
         fullScreen
@@ -394,7 +381,7 @@ function Mint() {
             <Typography sx={{ ml: 1, flexGrow: 1}} variant="h6" component="div">
               Close
             </Typography>
-            
+            <Typography sx={{ flexGrow: 1}} variant="h5" component="div">Preview</Typography>
             <IconButton
               color="inherit"
               sx={{ ml: 2 }}
@@ -402,8 +389,6 @@ function Mint() {
                 if (minting) {
                   return;
                 }
-                setHud(true);
-                setMinting(true);
                 canvas2Blob(articleCanvas);
               }}
             >
@@ -418,15 +403,18 @@ function Mint() {
           <TextField
             required
             autoFocus
+            error={nameVerified}
             id="outlined-required"
             label="Required"
             placeholder="Title"
             helperText="Title.(< 50 characters)"
             sx={{ mt: 5, mb: 2, width: '100%'}}
+            value={nftName}
             onChange={handleName}
           />
           <TextField
             required
+            error={descriptionVerified}
             id="outlined-required"
             label="Required"
             placeholder="Description of your Article"
@@ -434,6 +422,7 @@ function Mint() {
             multiline
             maxRows={4}
             sx={{ mb: 5, width: '100%'}}
+            value={nftDescription}
             onChange={handleDescription}
           />
         </Container>
