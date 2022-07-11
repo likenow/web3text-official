@@ -70,7 +70,7 @@ function Mint() {
   const [nftDescription, setDescription] = useState("");
   const [nameVerified, setNameVerified] = useState(false);
   const [descriptionVerified, setDescriptionVerified] = useState(false);
-  const { t } = useTranslation(['ns1', 'ns2']);
+  const { t } = useTranslation();
 
   async function updateStatus() {
     const { contract } = await connectWallet();
@@ -346,7 +346,7 @@ function Mint() {
           }}
         >
           {/* 铸造文章 NFT{minting ? '中...' : ''} */}
-          { t('ns1:mint') }
+          { t('mint') }
         </StyledMintButton>
       </div>
     );

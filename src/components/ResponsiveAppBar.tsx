@@ -69,8 +69,8 @@ function ConnectSection() {
 
 const ResponsiveAppBar = () => {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
-  const { i18n } = useTranslation();
-
+  
+  const { t, i18n } = useTranslation();
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -130,8 +130,9 @@ const ResponsiveAppBar = () => {
               <FileDownloadIcon />
             </IconButton>
             <IconButton onClick={() => {
-              i18n.changeLanguage('zh', (err, t) => {
-                // console.log('something went wrong loading', err);
+              // https://www.i18next.com/overview/api#changelanguage
+              i18n.changeLanguage('zh-CN', (err, t) => {
+                if (err) return console.log('something went wrong loading', err);
               });
             }}>
               <TranslateIcon />

@@ -1,10 +1,20 @@
+// https://react.i18next.com/latest/typescript
 // import the original type declarations
-import 'react-i18next';
-// import all namespaces (for the default language, only)
-import { resources } from 'i18n/config';
+import { resources, LanguageType } from './i18n/i18n';
 
-// react-i18next versions higher than 11.11.0
-declare module 'react-i18next' {
-  type DefaultResources = typeof resources['en'];
-  interface Resources extends DefaultResources {}
+type I18nStoreType = typeof import('./i18n/en-US.json');
+
+export type I18nT = {
+  (key: keyof I18nStoreType): string;
 };
+
+declare module 'i18next' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface TFunction extends I18nT {}
+}
+
+declare module 'react-i18next' {
+  interface CustomTypeOptions {
+    resources: typeof resources[LanguageType.EN_US];
+  }
+}
