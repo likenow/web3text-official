@@ -36,14 +36,14 @@ import Mint from './Mint';
 
 
 const MenuBar = ({ editor } : any) => {
-  const [editable, setEditable] = useState<boolean>(false);
+  const [editable, setEditable] = useState<boolean>(true);
   const [fileDownloadUrl, setFileDownloadUrl] = useState<string>('');
   useEffect(() => {
     if (!editor) {
       return undefined
     }
     editor.setEditable(editable)
-  }, [editor, editable])
+  }, [editor, editable]);
 
   const setLink = useCallback(() => {
     const previousUrl = editor.getAttributes('link').href
@@ -59,7 +59,7 @@ const MenuBar = ({ editor } : any) => {
     }
     // update link
     editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run()
-  }, [editor])
+  }, [editor]);
 
   const addImage = useCallback(() => {
     const url = window.prompt('URL');
@@ -69,17 +69,18 @@ const MenuBar = ({ editor } : any) => {
       // });
       editor.chain().focus().setImage({ src: url }).run();
     }
-  }, [editor])
+  }, [editor]);
+
   const htmlExample = '<p>Example <strong>Text</strong></p>'
   const htmlImport = useCallback(() => {
     editor.commands.setContent(htmlExample)
-  }, [editor])
+  }, [editor]);
 
   const htmlExport: any = useCallback(() => {
     let content = editor.getHTML()
     console.log(content)
     return content
-  }, [editor])
+  }, [editor]);
   const jsonExample = {
     type: 'doc',
     content: [
@@ -105,7 +106,7 @@ const MenuBar = ({ editor } : any) => {
   }
   const jsonImport = useCallback(() => {
     editor.commands.setContent(jsonExample)
-  }, [editor])
+  }, [editor]);
   
   const jsonExport = useCallback(() => {
     const a: HTMLAnchorElement = document.createElement('a');
@@ -117,7 +118,7 @@ const MenuBar = ({ editor } : any) => {
     const blob = new Blob([output], {type: 'application/json'});
     const url = URL.createObjectURL(blob);
     setFileDownloadUrl(url);
-    // console.log(url);
+    console.log('url = ',url);
     a.download = 'yourArticle.json';
     a.href = url;
     a.setAttribute('style', 'display: none');
@@ -126,21 +127,21 @@ const MenuBar = ({ editor } : any) => {
     // free up storage--no longer needed.
     URL.revokeObjectURL(url);
     setFileDownloadUrl('');
-  }, [editor])
+  }, [editor]);
 
   const generateHTMLFromJSON = useMemo(() => {
     return generateHTML(jsonExample, [
       StarterKit,
       Image
     ])
-  }, [jsonExample])
+  }, [jsonExample]);
 
   const generateJSONFromHTML = useMemo(() => {
     return generateJSON(htmlExample, [
       StarterKit,
       Image
     ])
-  }, [htmlExample])
+  }, [htmlExample]);
 
   const htmlFromJson = () => {
     console.log(generateHTMLFromJSON)
@@ -324,7 +325,10 @@ const MenuBar = ({ editor } : any) => {
         <input
           type="checkbox"
           id="editable"
-          onChange={event => setEditable(event.target.checked)}
+          checked={editable}
+          onChange={event => {
+            setEditable(event.target.checked);
+          }}
         />
         <label htmlFor="editable">editable</label>
       </div>
@@ -334,6 +338,32 @@ const MenuBar = ({ editor } : any) => {
 }
 
 const Editor = () => {
+
+  useEffect(() => {
+    const handlePasteAnywhere = (event: any) => {
+      event.preventDefault();
+      const { clipboardData } = event;
+      console.log('handlePasteAnywhere ==> ', clipboardData.getData('text'));
+      const { items } = clipboardData;
+      const { length } = items;
+      // blob中就是截图的文件，获取后可以上传到服务器
+      let blob = null;
+      for (let i = 0; i < length; i++) {
+        const item = items[i];
+        if (item.type.startsWith('image')) {
+          blob = item.getAsFile();
+          console.log('blob ==', blob);
+        }
+      }
+    };
+  
+    window.addEventListener('paste', handlePasteAnywhere);
+  
+    return () => {
+      window.removeEventListener('paste', handlePasteAnywhere);
+    };
+  }, []);
+
   /// https://tiptap.dev/extensions tiptap扩展
   /// https://tiptap.dev/api/extensions/ tiptap扩展文档
   const editor = useEditor({
