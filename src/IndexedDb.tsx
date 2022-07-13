@@ -8,7 +8,7 @@ class IndexedDb {
     this.database = database;
   }
 
-  public async createObjectStore(tableNames: string[]) {
+  public async createObjectStore(tableNames: string[], indexes?: string[]) {
     try {
       this.db = await openDB(this.database, 1, {
         upgrade(db: IDBPDatabase) {
@@ -16,13 +16,28 @@ class IndexedDb {
             if (db.objectStoreNames.contains(tableName)) {
               continue;
             }
-            db.createObjectStore(tableName, { autoIncrement: true, keyPath: 'id' });
+            const store = db.createObjectStore(tableName, { autoIncrement: true, keyPath: 'id' });
+            if (indexes) {
+              for (const indexName of indexes) {
+                store.createIndex(indexName, indexName);
+              }
+            }
           }
         },
       });
     } catch (error) {
+      console.log('error', JSON.stringify(error));
       return false;
     }
+  }
+
+  public async getValueByIndex(tableName: string, name: string) {
+    const tx = this.db.transaction(tableName, 'readonly');
+    const store = tx.objectStore(tableName);
+    const idx = await store.index(name);
+    const result = await idx.getAll();
+    console.log('Get Data By Index ', JSON.stringify(result));
+    return result;
   }
 
   public async getValue(tableName: string, id: number) {

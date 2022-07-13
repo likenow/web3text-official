@@ -1,5 +1,3 @@
-import '../styles.css';
-
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import TextAlign from '@tiptap/extension-text-align';
@@ -33,6 +31,8 @@ import FormatClearIcon from '@mui/icons-material/FormatClear';
 import AddLinkIcon from '@mui/icons-material/AddLink';
 import Mint from './Mint';
 // import { convertImgToBase64URL } from '../utils';
+import IndexedDb from '../IndexedDb';
+import './styles.scss';
 
 
 const MenuBar = ({ editor } : any) => {
@@ -158,9 +158,7 @@ const MenuBar = ({ editor } : any) => {
   return (
     <div
       style={{
-        marginTop: '5%',
-        marginLeft: '15%',
-        marginBottom: '5%'
+        marginTop: '2rem'
       }}
     >
       <IconButton onClick={() => editor.chain().focus().setTextAlign('center').run()} className={editor.isActive({ textAlign: 'center' }) ? 'is-active' : ''} aria-label="center">
@@ -338,22 +336,78 @@ const MenuBar = ({ editor } : any) => {
 }
 
 const Editor = () => {
-
+  useEffect(() => {
+    const runIndexDb = async () => {
+      const dbName = 'articles';
+      const indexedDb = new IndexedDb('article-db');
+      await indexedDb.createObjectStore(['articles'], ['address', 'timestamp']);
+      let testval = {
+        id: 1,
+        title: 'Thrones',
+        address: 'abc',
+        desc: 'A Game of Thrones',
+        body: 'bala bala A Game of Thrones',
+        timestamp: Date.parse(new Date().toString()),
+      };
+      let testval1 = {
+        id: 2,
+        title: 'Fire And Ice',
+        address: 'def',
+        desc: 'A Song of Fire and Ice',
+        body: 'bala bala A Song of Fire and Ice',
+        timestamp: Date.parse(new Date().toString()),
+      };
+      let testval2 = {
+        id: 3,
+        title: 'Harry Potter',
+        address: 'ghi',
+        desc: 'Harry Potter and the Chamber of Secrets',
+        body: 'bala bala Harry Potter and the Chamber of Secrets',
+        timestamp: Date.parse(new Date().toString()),
+      };
+      // await indexedDb.putValue(dbName, testval);
+      await indexedDb.putBulkValue(dbName, [testval, testval1]);
+      // await indexedDb.getValue(dbName, 1);
+      await indexedDb.getValueByIndex(dbName, 'address');
+      // await indexedDb.getAllValue(dbName);
+      // await indexedDb.deleteValue(dbName, 1);
+    }
+    // runIndexDb();
+  }, []);
   useEffect(() => {
     const handlePasteAnywhere = (event: any) => {
       event.preventDefault();
       const { clipboardData } = event;
-      console.log('handlePasteAnywhere ==> ', clipboardData.getData('text'));
       const { items } = clipboardData;
       const { length } = items;
       // blob中就是截图的文件，获取后可以上传到服务器
       let blob = null;
       for (let i = 0; i < length; i++) {
         const item = items[i];
-        if (item.type.startsWith('image')) {
-          blob = item.getAsFile();
-          console.log('blob ==', blob);
-        }
+        console.log('clipboardData item type  ==> ', item.type);
+        console.log('clipboardData ==> ', clipboardData.getData(item.type));
+        // if (item.type.startsWith('image')) {
+        //   blob = item.getAsFile();
+        //   console.log('blob ==', blob);
+        // }
+        /*
+          1. 从网上粘贴文字段落
+              从 clipboardData 中的 取出
+              text/plain 文字（纯文字）
+              text/html (包含图片，遍历、正则找到 img http/https 替换为 服务器的图片地址）
+
+          2. 从本地粘贴文字段落
+              从 clipboardData 中的 取出
+              text/plain 文字（纯文字）
+              text/html (包含图片，遍历、正则找到 img file:///  替换为 服务器的图片地址）
+
+          3. 粘贴图片
+              截图
+              复制图片
+              data:image/png;base64,base64编码的png图片数据
+
+          4. 组装数据，插入到光标坐在位置    
+        */
       }
     };
   
@@ -399,10 +453,16 @@ const Editor = () => {
     A <strong>non-fungible token</strong> (<strong>NFT</strong>) is a <a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Security_(finance)">financial security</a> consisting of digital data stored in a <a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Blockchain">blockchain</a>, a form of <a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Distributed_ledger">distributed ledger</a>. The ownership of an NFT is recorded in the blockchain, and can be transferred by the owner, allowing NFTs to be sold and traded. NFTs can be created by anybody, and require few or no coding skills to create.<a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Non-fungible_token#cite_note-1">[1]</a> NFTs typically contain references to <a target="_blank" rel="noopener noreferrer nofollow" class="mw-redirect" href="https://en.wikipedia.org/wiki/Digital_file">digital files</a> such as</p><ul><li><p>photos</p></li><li><p>videos</p></li><li><p>audio</p></li><li><p>...</p></li></ul><p> Because NFTs are uniquely identifiable, they differ from <a target="_blank" rel="noopener noreferrer nofollow" class="mw-redirect" href="https://en.wikipedia.org/wiki/Cryptocurrencies">cryptocurrencies</a>, which are <a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Fungibility">fungible</a>. The <a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Market_value">market value</a> of an NFT is associated with the digital file it references.</p><p>Proponents of NFTs claim that NFTs provide a public <a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Certificate_of_authenticity">certificate of authenticity</a> or <a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Title_(property)">proof of ownership</a>, but the legal rights conveyed by an NFT can be uncertain. The ownership of an NFT as defined by the blockchain has no inherent legal meaning, and does not necessarily grant <a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Copyright">copyright</a>, <a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Intellectual_property">intellectual property</a> rights, or other legal rights over its associated digital file. An NFT does not restrict the sharing or copying of its associated digital file, and does not prevent the creation of NFTs that reference identical files.</p><p>The <strong>NFT</strong> market grew dramatically from 2020–2021: the trading of NFTs in 2021 increased to more than $17 billion, up by 21,000% over 2020's total of $82 million.<a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Non-fungible_token#cite_note-2">[2]</a> NFTs have been used as <a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Speculation">speculative</a> investments, and they have drawn increasing criticism for the energy cost and <a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Carbon_footprint">carbon footprint</a> associated with validating blockchain transactions as well as their frequent use in <a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Confidence_trick">art scams</a>.<a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Non-fungible_token#cite_note-3">[3]</a> The NFT market has also been compared to an <a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Economic_bubble">economic bubble</a> or a <a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Ponzi_scheme">Ponzi scheme</a>.<a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Non-fungible_token#cite_note-4">[4]</a> By May 2022, the NFT market was seen as beginning to collapse.<a target="_blank" rel="noopener noreferrer nofollow" href="https://en.wikipedia.org/wiki/Non-fungible_token#cite_note-flatlining-5">[5]</a></p><p>
     </p>
     `,
+    autofocus: 1,
   });
 
   return (
-    <div>
+    <div
+      style={{
+        width: '70%',
+        margin:' 0 auto'
+      }}
+    >
       <MenuBar editor={editor} />
       <div id='editorContainer'>
         <EditorContent editor={editor} />

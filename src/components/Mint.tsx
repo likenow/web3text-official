@@ -429,7 +429,12 @@ function Mint() {
             onChange={handleDescription}
           />
         </Container>
-        <div id="preview_texts_canvas" />
+        <div id="preview_texts_canvas" 
+          style={{
+            width: '70%',
+            margin:' 0 auto'
+          }}
+        />
         <Container>
           {
             loading ? (
