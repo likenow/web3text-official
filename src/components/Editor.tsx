@@ -29,14 +29,108 @@ import FormatColorTextIcon from '@mui/icons-material/FormatColorText';
 import FormatUnderlinedIcon from '@mui/icons-material/FormatUnderlined';
 import FormatClearIcon from '@mui/icons-material/FormatClear';
 import AddLinkIcon from '@mui/icons-material/AddLink';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import Mint from './Mint';
 // import { convertImgToBase64URL } from '../utils';
 import IndexedDb from '../IndexedDb';
 import './styles.scss';
+import { styled } from '@mui/material/styles';
+import Paper from '@mui/material/Paper';
+import Divider from '@mui/material/Divider';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import Box from '@mui/material/Box';
+import MenuItem from '@mui/material/MenuItem';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+
+const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
+  '& .MuiToggleButtonGroup-grouped': {
+    margin: theme.spacing(0.5),
+    border: 0,
+    '&.Mui-disabled': {
+      border: 0,
+    },
+    '&:not(:first-of-type)': {
+      borderRadius: theme.shape.borderRadius,
+    },
+    '&:first-of-type': {
+      borderRadius: theme.shape.borderRadius,
+    },
+  },
+}));
 
 
 const MenuBar = ({ editor } : any) => {
   const [editable, setEditable] = useState<boolean>(true);
+  const [level, setLevel] = React.useState('1');
+  const [alignment, setAlignment] = React.useState('left');
+  const [formats, setFormats] = React.useState(['normal']);
+
+  const handleLevel = (event: SelectChangeEvent) => {
+    const l = event.target.value;
+    setLevel(l);
+    editor.chain().focus().toggleHeading({ level: l }).run();
+  };
+
+  const handleColor = (event: any) => {
+    const target = event.target as HTMLInputElement;
+    let val = target.value;
+    editor.chain().focus().setColor(val).run();
+  };
+
+  const handleFormat = (
+    event: React.MouseEvent<HTMLElement>,
+    newFormats: string[],
+  ) => {
+    setFormats(newFormats);
+    console.log('formats = ', newFormats);
+    return;
+    // todo
+    for (const format of newFormats) {
+      switch (format) {
+        case 'bold':
+          editor.chain().focus().unsetBold().run();
+          break;
+        case 'italic':
+          editor.chain().focus().unsetItalic().run();
+          break;
+        case 'underlined':
+          editor.chain().focus().unsetUnderline().run();
+          break;
+        case 'strikethrough':
+          editor.chain().focus().unsetStrike().run();
+          break;
+        case 'color':
+          editor.chain().focus().unsetColor().run();
+          break;
+        default:
+          break;
+      }
+    }
+  };
+
+  const handleAlignment = (
+    event: React.MouseEvent<HTMLElement>,
+    newAlignment: string,
+  ) => {
+    setAlignment(newAlignment);
+    switch (newAlignment) {
+      case 'left':
+        editor.chain().focus().setTextAlign('left').run();
+        break;
+      case 'center':
+        editor.chain().focus().setTextAlign('center').run();
+        break;
+      case 'right':
+        editor.chain().focus().setTextAlign('right').run();
+        break;
+      case 'justify':
+        editor.chain().focus().setTextAlign('justify').run();
+        break;
+      default:
+        break;
+    }
+  };
   const [fileDownloadUrl, setFileDownloadUrl] = useState<string>('');
   useEffect(() => {
     if (!editor) {
@@ -161,158 +255,112 @@ const MenuBar = ({ editor } : any) => {
         marginTop: '2rem'
       }}
     >
-      <IconButton onClick={() => editor.chain().focus().setTextAlign('center').run()} className={editor.isActive({ textAlign: 'center' }) ? 'is-active' : ''} aria-label="center">
-        <FormatAlignCenterIcon />
-      </IconButton>
-      <IconButton onClick={() => editor.chain().focus().setTextAlign('left').run()} className={editor.isActive({ textAlign: 'left' }) ? 'is-active' : ''} aria-label="left">
-        <FormatAlignLeftIcon />
-      </IconButton>
-      <IconButton onClick={() => editor.chain().focus().setTextAlign('right').run()} className={editor.isActive({ textAlign: 'right' }) ? 'is-active' : ''} aria-label="right">
-        <FormatAlignRightIcon />
-      </IconButton>
-      <IconButton onClick={() => editor.chain().focus().setTextAlign('justify').run()} className={editor.isActive({ textAlign: 'justify' }) ? 'is-active' : ''} aria-label="justify">
-        <FormatAlignJustifyIcon />
-      </IconButton>
-      <IconButton onClick={() => editor.chain().focus().toggleBold().run()}>
-        <FormatBoldIcon />
-      </IconButton>
-      <IconButton onClick={() => editor.chain().focus().toggleItalic().run()}>
-        <FormatItalicIcon />
-      </IconButton>
-      <IconButton onClick={() => editor.chain().focus().toggleStrike().run()}>
-        <StrikethroughSIcon />
-      </IconButton>
-      <IconButton onClick={() => editor.chain().focus().toggleCode().run()}>
-        <CodeIcon />
-      </IconButton>
-      <IconButton onClick={() => editor.chain().focus().unsetAllMarks().run()}>
-        <FormatClearIcon />
-      </IconButton>
-      <IconButton onClick={() => editor.chain().focus().toggleUnderline().run()}>
-        <FormatUnderlinedIcon />
-      </IconButton>
-      <IconButton
-        onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-        className={editor.isActive('heading', { level: 1 }) ? 'is-active' : ''}
+      <Paper
+        elevation={0}
+        sx={{
+          display: 'flex',
+          border: (theme) => `1px solid ${theme.palette.divider}`,
+          flexWrap: 'wrap',
+        }}
       >
-        h1
-      </IconButton>
-      <IconButton
-        onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-        className={editor.isActive('heading', { level: 2 }) ? 'is-active' : ''}
-      >
-        h2
-      </IconButton>
-      <IconButton
-        onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-        className={editor.isActive('heading', { level: 3 }) ? 'is-active' : ''}
-      >
-        h3
-      </IconButton>
-      <IconButton
-        onClick={() => editor.chain().focus().toggleHeading({ level: 4 }).run()}
-        className={editor.isActive('heading', { level: 4 }) ? 'is-active' : ''}
-      >
-        h4
-      </IconButton>
-      <IconButton
-        onClick={() => editor.chain().focus().toggleHeading({ level: 5 }).run()}
-        className={editor.isActive('heading', { level: 5 }) ? 'is-active' : ''}
-      >
-        h5
-      </IconButton>
-      <IconButton
-        onClick={() => editor.chain().focus().toggleHeading({ level: 6 }).run()}
-        className={editor.isActive('heading', { level: 6 }) ? 'is-active' : ''}
-      >
-        h6
-      </IconButton>
-      <IconButton onClick={() => editor.chain().focus().toggleBulletList().run()}>
-        <FormatListBulletedIcon />
-      </IconButton>
-      <IconButton onClick={() => editor.chain().focus().toggleOrderedList().run()}>
-        <FormatListNumberedIcon />
-      </IconButton>
-      <IconButton onClick={() => editor.chain().focus().toggleCodeBlock().run()}>
-        <DataObjectIcon />
-      </IconButton>
-      <IconButton onClick={() => editor.chain().focus().toggleBlockquote().run()}>
-        <FormatQuoteIcon />
-      </IconButton>
-      <IconButton onClick={() => editor.chain().focus().setHorizontalRule().run()}>
-        <HorizontalRuleIcon />
-      </IconButton>
-      <IconButton onClick={() => editor.chain().focus().undo().run()}>
-        <UndoIcon />
-      </IconButton>
-      <IconButton onClick={() => editor.chain().focus().redo().run()}>
-        <RedoIcon />
-      </IconButton>
-      <IconButton onClick={addImage}> 
-        <AddPhotoAlternateIcon />
-      </IconButton>
-      <IconButton onClick={setLink}>
-        <AddLinkIcon />
-      </IconButton>
-      <br />
-      <div>
-        <IconButton>
-          <FormatColorTextIcon />
+        <StyledToggleButtonGroup
+          size="small"
+          value={alignment}
+          exclusive
+          onChange={handleAlignment}
+          aria-label="text alignment"
+        >
+          <ToggleButton value="left" aria-label="left aligned">
+            <FormatAlignLeftIcon />
+          </ToggleButton>
+          <ToggleButton value="center" aria-label="centered">
+            <FormatAlignCenterIcon />
+          </ToggleButton>
+          <ToggleButton value="right" aria-label="right aligned">
+            <FormatAlignRightIcon />
+          </ToggleButton>
+          <ToggleButton value="justify" aria-label="justified">
+            <FormatAlignJustifyIcon />
+          </ToggleButton>
+        </StyledToggleButtonGroup>
+        <Divider flexItem orientation="vertical" sx={{ mx: 0.5, my: 1 }} />
+        <StyledToggleButtonGroup
+          size="small"
+          value={formats}
+          onChange={handleFormat}
+          aria-label="text formatting"
+        >
+          <ToggleButton value="bold" aria-label="bold">
+            <FormatBoldIcon />
+          </ToggleButton>
+          <ToggleButton value="italic" aria-label="italic">
+            <FormatItalicIcon />
+          </ToggleButton>
+          <ToggleButton value="underlined" aria-label="underlined">
+            <FormatUnderlinedIcon />
+          </ToggleButton>
+          <ToggleButton value="strikethrough" aria-label="strikethrough">
+            <StrikethroughSIcon />
+          </ToggleButton>
+          <ToggleButton value="color" aria-label="color">
+            <FormatColorTextIcon />
+            <input
+              type="color"
+              onInput={handleColor}
+              value={editor.getAttributes('textStyle').color}
+            />
+            <ArrowDropDownIcon />
+          </ToggleButton>
+        </StyledToggleButtonGroup>
+        <IconButton onClick={() => editor.chain().focus().toggleCode().run()}>
+          <CodeIcon />
         </IconButton>
-        <input
-          type="color"
-          onInput={event => {
-            const target = event.target as HTMLInputElement;
-            let val = target.value;
-            editor.chain().focus().setColor(val).run();
-          }}
-          value={editor.getAttributes('textStyle').color}
-        />
-        <button
-          onClick={() => editor.chain().focus().setColor('#958DF1').run()}
-          className={editor.isActive('textStyle', { color: '#958DF1' }) ? 'is-active' : ''}
-        >
-          purple
-        </button>
-        <button
-          onClick={() => editor.chain().focus().setColor('#F98181').run()}
-          className={editor.isActive('textStyle', { color: '#F98181' }) ? 'is-active' : ''}
-        >
-          red
-        </button>
-        <button
-          onClick={() => editor.chain().focus().setColor('#FBBC88').run()}
-          className={editor.isActive('textStyle', { color: '#FBBC88' }) ? 'is-active' : ''}
-        >
-          orange
-        </button>
-        <button
-          onClick={() => editor.chain().focus().setColor('#FAF594').run()}
-          className={editor.isActive('textStyle', { color: '#FAF594' }) ? 'is-active' : ''}
-        >
-          yellow
-        </button>
-        <button
-          onClick={() => editor.chain().focus().setColor('#70CFF8').run()}
-          className={editor.isActive('textStyle', { color: '#70CFF8' }) ? 'is-active' : ''}
-        >
-          blue
-        </button>
-        <button
-          onClick={() => editor.chain().focus().setColor('#94FADB').run()}
-          className={editor.isActive('textStyle', { color: '#94FADB' }) ? 'is-active' : ''}
-        >
-          teal
-        </button>
-        <button
-          onClick={() => editor.chain().focus().setColor('#B9F18D').run()}
-          className={editor.isActive('textStyle', { color: '#B9F18D' }) ? 'is-active' : ''}
-        >
-          green
-        </button>
-        <button onClick={() => editor.chain().focus().unsetColor().run()}>unsetColor</button>
-      </div>
-      <br />
+        <IconButton onClick={() => editor.chain().focus().unsetAllMarks().run()}>
+          <FormatClearIcon />
+        </IconButton>
+        <IconButton onClick={() => editor.chain().focus().toggleBulletList().run()}>
+          <FormatListBulletedIcon />
+        </IconButton>
+        <IconButton onClick={() => editor.chain().focus().toggleOrderedList().run()}>
+          <FormatListNumberedIcon />
+        </IconButton>
+        <IconButton onClick={() => editor.chain().focus().toggleCodeBlock().run()}>
+          <DataObjectIcon />
+        </IconButton>
+        <IconButton onClick={() => editor.chain().focus().toggleBlockquote().run()}>
+          <FormatQuoteIcon />
+        </IconButton>
+        <IconButton onClick={() => editor.chain().focus().setHorizontalRule().run()}>
+          <HorizontalRuleIcon />
+        </IconButton>
+        <Box>
+          <Select
+            value={level}
+            onChange={handleLevel}
+            inputProps={{ 'aria-label': 'Without label' }}
+          >
+            <MenuItem value={1}>h1</MenuItem>
+            <MenuItem value={2}>h2</MenuItem>
+            <MenuItem value={3}>h3</MenuItem>
+            <MenuItem value={4}>h4</MenuItem>
+            <MenuItem value={5}>h5</MenuItem>
+            <MenuItem value={6}>h6</MenuItem>
+          </Select>
+        </Box>
+        <IconButton onClick={addImage}> 
+          <AddPhotoAlternateIcon />
+        </IconButton>
+        <IconButton onClick={setLink}>
+          <AddLinkIcon />
+        </IconButton>
+        <IconButton onClick={() => editor.chain().focus().undo().run()}>
+          <UndoIcon />
+        </IconButton>
+        <IconButton onClick={() => editor.chain().focus().redo().run()}>
+          <RedoIcon />
+        </IconButton>
+      </Paper>
+      
       <button onClick={htmlExport}> Export HTML </button>
       <button onClick={htmlImport}> Import HTML </button>
       <button onClick={jsonExport}> Export JSON </button>

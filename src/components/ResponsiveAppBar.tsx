@@ -10,10 +10,11 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import FileDownloadIcon from '@mui/icons-material/FileDownload';
-import FileUploadIcon from '@mui/icons-material/FileUpload';
-import FileDownloadOffIcon from '@mui/icons-material/FileDownloadOff';
 import TranslateIcon from '@mui/icons-material/Translate';
+import ShareIcon from '@mui/icons-material/Share';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import InputIcon from '@mui/icons-material/Input';
 import { useState, useEffect } from 'react';
 import { get, subscribe } from '../store';
 import ConnectWallet, { connectWallet } from './ConnectWallet';
@@ -120,23 +121,37 @@ const ResponsiveAppBar = () => {
                 </MenuItem>
               ))}
             </Menu>
-            <IconButton>
-              <FileDownloadOffIcon />
-            </IconButton>
-            <IconButton>
-              <FileUploadIcon />
-            </IconButton>
-            <IconButton>
-              <FileDownloadIcon />
-            </IconButton>
-            <IconButton onClick={() => {
-              // https://www.i18next.com/overview/api#changelanguage
-              i18n.changeLanguage('zh-CN', (err, t) => {
-                if (err) return console.log('something went wrong loading', err);
-              });
-            }}>
-              <TranslateIcon />
-            </IconButton>
+            <Tooltip title="import">
+              <IconButton>
+                <InputIcon />
+              </IconButton>
+            </Tooltip>
+            
+            <Tooltip title="upload">
+              <IconButton>
+                <CloudUploadIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="download">
+              <IconButton>
+                <FileDownloadIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="share">
+              <IconButton>
+                <ShareIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="en/zh">
+              <IconButton onClick={() => {
+                // https://www.i18next.com/overview/api#changelanguage
+                i18n.changeLanguage('zh-CN', (err, t) => {
+                  if (err) return console.log('something went wrong loading', err);
+                });
+              }}>
+                <TranslateIcon />
+              </IconButton>
+            </Tooltip>
           </Box>
           <Box>
             <ConnectSection />
