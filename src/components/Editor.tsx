@@ -1,3 +1,4 @@
+import './styles.scss';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import TextAlign from '@tiptap/extension-text-align';
@@ -8,7 +9,6 @@ import TextStyle from '@tiptap/extension-text-style';
 import Link from '@tiptap/extension-link';
 import { generateHTML, generateJSON } from '@tiptap/html';
 import React, { useEffect, useCallback, useState, useMemo } from 'react';
-import { IconButton } from '@mui/material';
 import FormatAlignCenterIcon from '@mui/icons-material/FormatAlignCenter';
 import FormatAlignLeftIcon from '@mui/icons-material/FormatAlignLeft';
 import FormatAlignRightIcon from '@mui/icons-material/FormatAlignRight';
@@ -27,49 +27,42 @@ import HorizontalRuleIcon from '@mui/icons-material/HorizontalRule';
 import DataObjectIcon from '@mui/icons-material/DataObject';
 import FormatColorTextIcon from '@mui/icons-material/FormatColorText';
 import FormatUnderlinedIcon from '@mui/icons-material/FormatUnderlined';
-import FormatClearIcon from '@mui/icons-material/FormatClear';
 import AddLinkIcon from '@mui/icons-material/AddLink';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import Mint from './Mint';
 // import { convertImgToBase64URL } from '../utils';
 import IndexedDb from '../IndexedDb';
-import './styles.scss';
-import { styled } from '@mui/material/styles';
+import Button from '@mui/material/Button';
+import ButtonGroup from '@mui/material/ButtonGroup';
 import Paper from '@mui/material/Paper';
-import Divider from '@mui/material/Divider';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import Box from '@mui/material/Box';
+import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import MenuList from '@mui/material/MenuList';
 
-const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
-  '& .MuiToggleButtonGroup-grouped': {
-    margin: theme.spacing(0.5),
-    border: 0,
-    '&.Mui-disabled': {
-      border: 0,
-    },
-    '&:not(:first-of-type)': {
-      borderRadius: theme.shape.borderRadius,
-    },
-    '&:first-of-type': {
-      borderRadius: theme.shape.borderRadius,
-    },
-  },
-}));
-
+const levels = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
 
 const MenuBar = ({ editor } : any) => {
   const [editable, setEditable] = useState<boolean>(true);
-  const [level, setLevel] = React.useState('1');
+  const [level, setLevel] = React.useState(1);
   const [alignment, setAlignment] = React.useState('left');
   const [formats, setFormats] = React.useState(['normal']);
-
-  const handleLevel = (event: SelectChangeEvent) => {
-    const l = event.target.value;
-    setLevel(l);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleMenuItemClick = (
+    event: React.MouseEvent<HTMLLIElement, MouseEvent>,
+    index: number,
+  ) => {
+    setLevel(index);
+    let l = index+1;
     editor.chain().focus().toggleHeading({ level: l }).run();
+    setAnchorEl(null);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
   const handleColor = (event: any) => {
@@ -78,59 +71,6 @@ const MenuBar = ({ editor } : any) => {
     editor.chain().focus().setColor(val).run();
   };
 
-  const handleFormat = (
-    event: React.MouseEvent<HTMLElement>,
-    newFormats: string[],
-  ) => {
-    setFormats(newFormats);
-    console.log('formats = ', newFormats);
-    return;
-    // todo
-    for (const format of newFormats) {
-      switch (format) {
-        case 'bold':
-          editor.chain().focus().unsetBold().run();
-          break;
-        case 'italic':
-          editor.chain().focus().unsetItalic().run();
-          break;
-        case 'underlined':
-          editor.chain().focus().unsetUnderline().run();
-          break;
-        case 'strikethrough':
-          editor.chain().focus().unsetStrike().run();
-          break;
-        case 'color':
-          editor.chain().focus().unsetColor().run();
-          break;
-        default:
-          break;
-      }
-    }
-  };
-
-  const handleAlignment = (
-    event: React.MouseEvent<HTMLElement>,
-    newAlignment: string,
-  ) => {
-    setAlignment(newAlignment);
-    switch (newAlignment) {
-      case 'left':
-        editor.chain().focus().setTextAlign('left').run();
-        break;
-      case 'center':
-        editor.chain().focus().setTextAlign('center').run();
-        break;
-      case 'right':
-        editor.chain().focus().setTextAlign('right').run();
-        break;
-      case 'justify':
-        editor.chain().focus().setTextAlign('justify').run();
-        break;
-      default:
-        break;
-    }
-  };
   const [fileDownloadUrl, setFileDownloadUrl] = useState<string>('');
   useEffect(() => {
     if (!editor) {
@@ -259,50 +199,47 @@ const MenuBar = ({ editor } : any) => {
         elevation={0}
         sx={{
           display: 'flex',
-          border: (theme) => `1px solid ${theme.palette.divider}`,
           flexWrap: 'wrap',
         }}
       >
-        <StyledToggleButtonGroup
-          size="small"
-          value={alignment}
-          exclusive
-          onChange={handleAlignment}
-          aria-label="text alignment"
-        >
-          <ToggleButton value="left" aria-label="left aligned">
-            <FormatAlignLeftIcon />
-          </ToggleButton>
-          <ToggleButton value="center" aria-label="centered">
-            <FormatAlignCenterIcon />
-          </ToggleButton>
-          <ToggleButton value="right" aria-label="right aligned">
-            <FormatAlignRightIcon />
-          </ToggleButton>
-          <ToggleButton value="justify" aria-label="justified">
-            <FormatAlignJustifyIcon />
-          </ToggleButton>
-        </StyledToggleButtonGroup>
-        <Divider flexItem orientation="vertical" sx={{ mx: 0.5, my: 1 }} />
-        <StyledToggleButtonGroup
-          size="small"
-          value={formats}
-          onChange={handleFormat}
-          aria-label="text formatting"
-        >
-          <ToggleButton value="bold" aria-label="bold">
+        <ButtonGroup size="small" variant="outlined" aria-label="outlined button group">
+          <Button onClick={() => editor.chain().focus().undo().run()}>
+            <UndoIcon />
+          </Button>
+          <Button onClick={() => editor.chain().focus().redo().run()}>
+            <RedoIcon />
+          </Button>
+          <Button
+            id="demo-positioned-button"
+            aria-controls={open ? 'demo-positioned-menu' : undefined}
+            aria-haspopup="true"
+            aria-expanded={open ? 'true' : undefined}
+            onClick={handleClick}
+          >
+            {levels[level]}
+            <ArrowDropDownIcon />
+          </Button>
+          <Button onClick={() => {
+            editor.chain().focus().toggleBold().run();
+          }}>
             <FormatBoldIcon />
-          </ToggleButton>
-          <ToggleButton value="italic" aria-label="italic">
+          </Button>
+          <Button onClick={() => {
+            editor.chain().focus().toggleItalic().run();
+          }}>
             <FormatItalicIcon />
-          </ToggleButton>
-          <ToggleButton value="underlined" aria-label="underlined">
+          </Button>
+          <Button onClick={() => {
+            editor.chain().focus().toggleUnderline().run();
+          }}>
             <FormatUnderlinedIcon />
-          </ToggleButton>
-          <ToggleButton value="strikethrough" aria-label="strikethrough">
+          </Button>
+          <Button onClick={() => {
+            editor.chain().focus().toggleStrike().run();
+          }}>
             <StrikethroughSIcon />
-          </ToggleButton>
-          <ToggleButton value="color" aria-label="color">
+          </Button>
+          <Button value="color" aria-label="color">
             <FormatColorTextIcon />
             <input
               type="color"
@@ -310,64 +247,73 @@ const MenuBar = ({ editor } : any) => {
               value={editor.getAttributes('textStyle').color}
             />
             <ArrowDropDownIcon />
-          </ToggleButton>
-        </StyledToggleButtonGroup>
-        <IconButton onClick={() => editor.chain().focus().toggleCode().run()}>
-          <CodeIcon />
-        </IconButton>
-        <IconButton onClick={() => editor.chain().focus().unsetAllMarks().run()}>
-          <FormatClearIcon />
-        </IconButton>
-        <IconButton onClick={() => editor.chain().focus().toggleBulletList().run()}>
-          <FormatListBulletedIcon />
-        </IconButton>
-        <IconButton onClick={() => editor.chain().focus().toggleOrderedList().run()}>
-          <FormatListNumberedIcon />
-        </IconButton>
-        <IconButton onClick={() => editor.chain().focus().toggleCodeBlock().run()}>
-          <DataObjectIcon />
-        </IconButton>
-        <IconButton onClick={() => editor.chain().focus().toggleBlockquote().run()}>
-          <FormatQuoteIcon />
-        </IconButton>
-        <IconButton onClick={() => editor.chain().focus().setHorizontalRule().run()}>
-          <HorizontalRuleIcon />
-        </IconButton>
-        <Box>
-          <Select
-            value={level}
-            onChange={handleLevel}
-            inputProps={{ 'aria-label': 'Without label' }}
-          >
-            <MenuItem value={1}>h1</MenuItem>
-            <MenuItem value={2}>h2</MenuItem>
-            <MenuItem value={3}>h3</MenuItem>
-            <MenuItem value={4}>h4</MenuItem>
-            <MenuItem value={5}>h5</MenuItem>
-            <MenuItem value={6}>h6</MenuItem>
-          </Select>
-        </Box>
-        <IconButton onClick={addImage}> 
-          <AddPhotoAlternateIcon />
-        </IconButton>
-        <IconButton onClick={setLink}>
-          <AddLinkIcon />
-        </IconButton>
-        <IconButton onClick={() => editor.chain().focus().undo().run()}>
-          <UndoIcon />
-        </IconButton>
-        <IconButton onClick={() => editor.chain().focus().redo().run()}>
-          <RedoIcon />
-        </IconButton>
+          </Button>
+          <Button onClick={() => {
+            editor.chain().focus().setTextAlign('left').run();
+          }}>
+            <FormatAlignLeftIcon />
+          </Button>
+          <Button onClick={() => {
+            editor.chain().focus().setTextAlign('center').run();
+          }}>
+            <FormatAlignCenterIcon />
+          </Button>
+          <Button onClick={() => {
+            editor.chain().focus().setTextAlign('right').run();
+          }}>
+            <FormatAlignRightIcon />
+          </Button>
+          <Button onClick={() => {
+            editor.chain().focus().setTextAlign('justify').run();
+          }}>
+            <FormatAlignJustifyIcon />
+          </Button>
+          <Button onClick={() => editor.chain().focus().toggleBulletList().run()}>
+            <FormatListBulletedIcon />
+          </Button>
+          <Button onClick={() => editor.chain().focus().toggleOrderedList().run()}>
+            <FormatListNumberedIcon />
+          </Button>
+          <Button onClick={() => editor.chain().focus().toggleCode().run()}>
+            <CodeIcon />
+          </Button>
+          <Button onClick={() => editor.chain().focus().toggleCodeBlock().run()}>
+            <DataObjectIcon />
+          </Button>
+          <Button onClick={() => editor.chain().focus().toggleBlockquote().run()}>
+            <FormatQuoteIcon />
+          </Button>
+          <Button onClick={() => editor.chain().focus().setHorizontalRule().run()}>
+            <HorizontalRuleIcon />
+          </Button>
+        </ButtonGroup>
+        <ButtonGroup variant="outlined" aria-label="outlined button group">
+          <Button onClick={addImage}> 
+            <AddPhotoAlternateIcon />
+          </Button>
+          <Button onClick={setLink}>
+            <AddLinkIcon />
+          </Button>
+          
+        </ButtonGroup>
       </Paper>
+
+      <ButtonGroup sx={{marginTop: 2, marginBottom: 2}} variant="outlined" aria-label="outlined button group">
+        <Button onClick={htmlExport}> Export HTML </Button>
+        <Button onClick={htmlImport}> Import HTML </Button>
+        <Button onClick={jsonExport}> Export JSON </Button>
+        <Button onClick={jsonImport}> Import JSON </Button>
+        <Button onClick={htmlFromJson}> Generate HTML from JSON </Button>
+        <Button onClick={jsonFromHtml}> Generate JSON from HTML </Button>
+      </ButtonGroup>
       
-      <button onClick={htmlExport}> Export HTML </button>
-      <button onClick={htmlImport}> Import HTML </button>
-      <button onClick={jsonExport}> Export JSON </button>
-      <button onClick={jsonImport}> Import JSON </button>
-      <button onClick={htmlFromJson}> Generate HTML from JSON </button>
-      <button onClick={jsonFromHtml}> Generate JSON from HTML </button>
-      <div className="checkbox">
+      <Paper
+        elevation={0}
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+        }}
+      >
         <input
           type="checkbox"
           id="editable"
@@ -376,9 +322,37 @@ const MenuBar = ({ editor } : any) => {
             setEditable(event.target.checked);
           }}
         />
-        <label htmlFor="editable">editable</label>
-      </div>
+        <Button>editable</Button>
+      </Paper>
+
       <Mint />
+      <Menu
+        id="demo-positioned-menu"
+        aria-labelledby="demo-positioned-button"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'left',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'left',
+        }}
+      >
+        <MenuList id="split-button-menu" autoFocusItem>
+          {levels.map((l, index) => (
+            <MenuItem
+              key={l}
+              selected={index === level}
+              onClick={(event) => handleMenuItemClick(event, index)}
+            >
+              {l}
+            </MenuItem>
+          ))}
+        </MenuList>
+      </Menu>
     </div>
   );
 }
