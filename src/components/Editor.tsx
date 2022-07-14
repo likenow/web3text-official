@@ -30,7 +30,7 @@ import FormatUnderlinedIcon from '@mui/icons-material/FormatUnderlined';
 import AddLinkIcon from '@mui/icons-material/AddLink';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import Mint from './Mint';
-// import { convertImgToBase64URL } from '../utils';
+import { getDownloadSafeImgSrc, getImgSrcBy } from '../utils';
 import IndexedDb from '../IndexedDb';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
@@ -360,7 +360,7 @@ const MenuBar = ({ editor } : any) => {
 const Editor = () => {
   useEffect(() => {
     const runIndexDb = async () => {
-      const dbName = 'articles';
+      const tbName = 'articles';
       const indexedDb = new IndexedDb('article-db');
       await indexedDb.createObjectStore(['articles'], ['address', 'timestamp']);
       let testval = {
@@ -387,17 +387,28 @@ const Editor = () => {
         body: 'bala bala Harry Potter and the Chamber of Secrets',
         timestamp: Date.parse(new Date().toString()),
       };
-      // await indexedDb.putValue(dbName, testval);
-      await indexedDb.putBulkValue(dbName, [testval, testval1]);
+      // await indexedDb.putValue(tbName, testval);
+      await indexedDb.putBulkValue(tbName, [testval, testval1]);
       // await indexedDb.getValue(dbName, 1);
-      await indexedDb.getValueByIndex(dbName, 'address');
-      // await indexedDb.getAllValue(dbName);
-      // await indexedDb.deleteValue(dbName, 1);
+      await indexedDb.getValueByIndex(tbName, 'address');
+      // await indexedDb.getAllValue(tbName);
+      // await indexedDb.deleteValue(tbName, 1);
     }
     // runIndexDb();
   }, []);
   useEffect(() => {
-    const handlePasteAnywhere = (event: any) => {
+    const runIdxDB = async (url: string, dataURL: string) => {
+      const indexedDb = new IndexedDb('article-db');
+      await indexedDb.createObjectStore(['images'], ['address', 'url']);
+      
+      await indexedDb.putValue('images', {
+        address: 'abcdefghij',
+        url: url,
+        data: dataURL
+      });
+    };
+    
+    const handlePasteAnywhere = async (event: any) => {
       event.preventDefault();
       const { clipboardData } = event;
       const { items } = clipboardData;
@@ -408,6 +419,15 @@ const Editor = () => {
         const item = items[i];
         console.log('clipboardData item type  ==> ', item.type);
         console.log('clipboardData ==> ', clipboardData.getData(item.type));
+        if (item.type.startsWith('text/html')) {
+          const urls = getImgSrcBy(clipboardData.getData(item.type)) as any;
+          // 先取一条试试
+          const url = urls[1];
+          const dataURL = await getDownloadSafeImgSrc(url);
+          // idb
+          await runIdxDB(url, JSON.stringify(dataURL));
+          // 替换粘贴板的内容，写入。直接写入base64
+        }
         // if (item.type.startsWith('image')) {
         //   blob = item.getAsFile();
         //   console.log('blob ==', blob);
