@@ -7,13 +7,17 @@ export function formatAddress(address: string) {
 export const padWidth = "1024px";
 
 /**
- * 通过 rawHTML 获取 img 中的 src
- * @param rawHTML
+ * 通过 rawHTML 获取所有 img 中的 src
+ * @param rawHTML 
+ * @returns 
  */
-export function getImgSrcBy(rawHTML:string) {
-  const re = /<img\s.*?src=(?:'|")([^'">]+)(?:'|")/gi;
-  const matchArray = re.exec(rawHTML);
-  return matchArray;
+export function getImgSrcs(rawHTML: string) {
+  var patt = /<img\s.*?src=(?:'|")([^'">]+)(?:'|")/gi;
+  var result = [], temp;
+  while((temp = patt.exec(rawHTML)) != null ) {
+    result.push(temp[1]);
+  }
+  return result;
 }
 
 /**
@@ -58,11 +62,11 @@ export const isSameOrigin = (s: string): boolean => {
 
 /**
  * 根据资源链接地址获取 MIME 类型 (如果不考虑 webp 以及 icon 等格式)
- * 默认返回 'image/png'
+ * 默认返回 'image/jpeg'
  * @param src
  */
 export const getImgMIMEType = (src: string): string => {
-  const PNG_MIME = 'image/png';
+  const JPEG_MIME = 'image/jpeg';
 
   // 找到文件后缀
   let type = src.replace(/.+\./, '').toLowerCase();
@@ -71,12 +75,24 @@ export const getImgMIMEType = (src: string): string => {
   type = type.replace(/jpg/i, 'jpeg').replace(/svg/i, 'svg+xml');
 
   if (!type) {
-    return PNG_MIME;
+    return JPEG_MIME;
   } else {
       const matchedFix = type.match(/png|jpeg|bmp|gif|svg\+xml/);
-    return matchedFix ? `image/${matchedFix[0]}` : PNG_MIME;
+    return matchedFix ? `image/${matchedFix[0]}` : JPEG_MIME;
   }
 };
+
+export const convertBlobToBase64 = async (blob: Blob) => { // blob data
+  return await blobToBase64(blob);
+}
+
+export const blobToBase64 = (blob: Blob) => new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.readAsDataURL(blob);
+  reader.onload = () => resolve(reader.result);
+  reader.onerror = error => reject(error);
+});
+
 
 /**
  * getImgToBase64
@@ -98,10 +114,14 @@ function getImgToBase64(url: string, callback: Function, mime?: string) {
     ctx!.drawImage(img, 0, 0);
 
     // 生成 Data URL
-    const dataURL = canvas.toDataURL(mime || 'image/png');
-    console.log('getImgToBase64 = ', dataURL);
+    // const dataURL = canvas.toDataURL(mime || 'image/png');
+    // console.log('getImgToBase64 = ', dataURL);
+    canvas.toBlob(async function(blob: Blob){
+      const base64str = await convertBlobToBase64(blob);
+      console.log('canvas base64str == ', base64str);
+      callback(base64str);
+    }, "image/jpeg", 0.95); // JPEG at 95% quality
     
-    callback.call(this, dataURL);
     canvas = null;
   };
   

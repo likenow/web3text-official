@@ -2,7 +2,8 @@ import './styles.scss';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import TextAlign from '@tiptap/extension-text-align';
-import Image from '@tiptap/extension-image';
+// import Image from '@tiptap/extension-image';
+import Image from '../Extensions/Image';
 import Underline from '@tiptap/extension-underline';
 import { Color } from '@tiptap/extension-color';
 import TextStyle from '@tiptap/extension-text-style';
@@ -30,7 +31,7 @@ import FormatUnderlinedIcon from '@mui/icons-material/FormatUnderlined';
 import AddLinkIcon from '@mui/icons-material/AddLink';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import Mint from './Mint';
-import { getDownloadSafeImgSrc, getImgSrcBy } from '../utils';
+import { getDownloadSafeImgSrc, getImgSrcs } from '../utils';
 import IndexedDb from '../IndexedDb';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
@@ -369,7 +370,7 @@ const Editor = () => {
         address: 'abc',
         desc: 'A Game of Thrones',
         body: 'bala bala A Game of Thrones',
-        timestamp: Date.parse(new Date().toString()),
+        timestamp: Date.now(),
       };
       let testval1 = {
         id: 2,
@@ -377,7 +378,7 @@ const Editor = () => {
         address: 'def',
         desc: 'A Song of Fire and Ice',
         body: 'bala bala A Song of Fire and Ice',
-        timestamp: Date.parse(new Date().toString()),
+        timestamp: Date.now(),
       };
       let testval2 = {
         id: 3,
@@ -385,7 +386,7 @@ const Editor = () => {
         address: 'ghi',
         desc: 'Harry Potter and the Chamber of Secrets',
         body: 'bala bala Harry Potter and the Chamber of Secrets',
-        timestamp: Date.parse(new Date().toString()),
+        timestamp: Date.now(),
       };
       // await indexedDb.putValue(tbName, testval);
       await indexedDb.putBulkValue(tbName, [testval, testval1]);
@@ -420,13 +421,23 @@ const Editor = () => {
         console.log('clipboardData item type  ==> ', item.type);
         console.log('clipboardData ==> ', clipboardData.getData(item.type));
         if (item.type.startsWith('text/html')) {
-          const urls = getImgSrcBy(clipboardData.getData(item.type)) as any;
-          // 先取一条试试
-          const url = urls[1];
-          const dataURL = await getDownloadSafeImgSrc(url);
-          // idb
-          await runIdxDB(url, JSON.stringify(dataURL));
-          // 替换粘贴板的内容，写入。直接写入base64
+          let rawHTML = clipboardData.getData(item.type);
+          var images = [];
+          const urls = getImgSrcs(rawHTML) as any;
+          console.log(urls);
+          for (const url of urls) {
+            const dataURL = await getDownloadSafeImgSrc(url);
+            images.push(dataURL);
+            // idb
+            // await runIdxDB(url, JSON.stringify(dataURL));
+          }
+          for (let i = 0; i < images.length; i++) {
+            const data = images[i];
+            const url = urls[i];
+            // 替换粘贴板的内容，写入。直接写入base64
+            // rawHTML.replace(url, data);
+          }
+          // clipboardData.setData(item.type, rawHTML);
         }
         // if (item.type.startsWith('image')) {
         //   blob = item.getAsFile();
