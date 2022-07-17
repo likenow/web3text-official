@@ -118,8 +118,10 @@ function getImgToBase64(url: string, callback: Function, mime?: string) {
     // console.log('getImgToBase64 = ', dataURL);
     canvas.toBlob(async function(blob: Blob){
       const base64str = await convertBlobToBase64(blob);
-      console.log('canvas base64str == ', base64str);
-      callback(base64str);
+      if (base64str) {
+        console.log('canvas base64str');
+        callback(base64str);
+      }
     }, "image/jpeg", 0.95); // JPEG at 95% quality
     
     canvas = null;

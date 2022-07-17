@@ -3,7 +3,7 @@ import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import TextAlign from '@tiptap/extension-text-align';
 // import Image from '@tiptap/extension-image';
-import Image from '../Extensions/Image';
+// import Image from '../Extensions/Image';
 import Underline from '@tiptap/extension-underline';
 import { Color } from '@tiptap/extension-color';
 import TextStyle from '@tiptap/extension-text-style';
@@ -96,15 +96,15 @@ const MenuBar = ({ editor } : any) => {
     editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run()
   }, [editor]);
 
-  const addImage = useCallback(() => {
-    const url = window.prompt('URL');
-    if (url) {
-      // convertImgToBase64URL(url, 'image/png', function(base64Img){
-      //   editor.chain().focus().setImage({ src: base64Img }).run();
-      // });
-      editor.chain().focus().setImage({ src: url }).run();
-    }
-  }, [editor]);
+  // const addImage = useCallback(() => {
+  //   const url = window.prompt('URL');
+  //   if (url) {
+  //     // convertImgToBase64URL(url, 'image/png', function(base64Img){
+  //     //   editor.chain().focus().setImage({ src: base64Img }).run();
+  //     // });
+  //     editor.chain().focus().setImage({ src: url }).run();
+  //   }
+  // }, [editor]);
 
   const htmlExample = '<p>Example <strong>Text</strong></p>'
   const htmlImport = useCallback(() => {
@@ -167,14 +167,14 @@ const MenuBar = ({ editor } : any) => {
   const generateHTMLFromJSON = useMemo(() => {
     return generateHTML(jsonExample, [
       StarterKit,
-      Image
+      // Image
     ])
   }, [jsonExample]);
 
   const generateJSONFromHTML = useMemo(() => {
     return generateJSON(htmlExample, [
       StarterKit,
-      Image
+      // Image
     ])
   }, [htmlExample]);
 
@@ -287,15 +287,12 @@ const MenuBar = ({ editor } : any) => {
           <Button onClick={() => editor.chain().focus().setHorizontalRule().run()}>
             <HorizontalRuleIcon />
           </Button>
-        </ButtonGroup>
-        <ButtonGroup variant="outlined" aria-label="outlined button group">
-          <Button onClick={addImage}> 
-            <AddPhotoAlternateIcon />
-          </Button>
           <Button onClick={setLink}>
             <AddLinkIcon />
           </Button>
-          
+          {/* <Button onClick={addImage}> 
+            <AddPhotoAlternateIcon />
+          </Button> */}
         </ButtonGroup>
       </Paper>
 
@@ -397,79 +394,6 @@ const Editor = () => {
     }
     // runIndexDb();
   }, []);
-  useEffect(() => {
-    const runIdxDB = async (url: string, dataURL: string) => {
-      const indexedDb = new IndexedDb('article-db');
-      await indexedDb.createObjectStore(['images'], ['address', 'url']);
-      
-      await indexedDb.putValue('images', {
-        address: 'abcdefghij',
-        url: url,
-        data: dataURL
-      });
-    };
-    
-    const handlePasteAnywhere = async (event: any) => {
-      event.preventDefault();
-      const { clipboardData } = event;
-      const { items } = clipboardData;
-      const { length } = items;
-      // blob中就是截图的文件，获取后可以上传到服务器
-      let blob = null;
-      for (let i = 0; i < length; i++) {
-        const item = items[i];
-        console.log('clipboardData item type  ==> ', item.type);
-        console.log('clipboardData ==> ', clipboardData.getData(item.type));
-        if (item.type.startsWith('text/html')) {
-          let rawHTML = clipboardData.getData(item.type);
-          var images = [];
-          const urls = getImgSrcs(rawHTML) as any;
-          console.log(urls);
-          for (const url of urls) {
-            const dataURL = await getDownloadSafeImgSrc(url);
-            images.push(dataURL);
-            // idb
-            // await runIdxDB(url, JSON.stringify(dataURL));
-          }
-          for (let i = 0; i < images.length; i++) {
-            const data = images[i];
-            const url = urls[i];
-            // 替换粘贴板的内容，写入。直接写入base64
-            // rawHTML.replace(url, data);
-          }
-          // clipboardData.setData(item.type, rawHTML);
-        }
-        // if (item.type.startsWith('image')) {
-        //   blob = item.getAsFile();
-        //   console.log('blob ==', blob);
-        // }
-        /*
-          1. 从网上粘贴文字段落
-              从 clipboardData 中的 取出
-              text/plain 文字（纯文字）
-              text/html (包含图片，遍历、正则找到 img http/https 替换为 服务器的图片地址）
-
-          2. 从本地粘贴文字段落
-              从 clipboardData 中的 取出
-              text/plain 文字（纯文字）
-              text/html (包含图片，遍历、正则找到 img file:///  替换为 服务器的图片地址）
-
-          3. 粘贴图片
-              截图
-              复制图片
-              data:image/png;base64,base64编码的png图片数据
-
-          4. 组装数据，插入到光标坐在位置    
-        */
-      }
-    };
-  
-    window.addEventListener('paste', handlePasteAnywhere);
-  
-    return () => {
-      window.removeEventListener('paste', handlePasteAnywhere);
-    };
-  }, []);
 
   /// https://tiptap.dev/extensions tiptap扩展
   /// https://tiptap.dev/api/extensions/ tiptap扩展文档
@@ -479,9 +403,9 @@ const Editor = () => {
       TextAlign.configure({
         types: ['heading', 'paragraph'],
       }),
-      Image.configure({
-        allowBase64: true
-      }),
+      // Image.configure({
+      //   allowBase64: true
+      // }),
       TextStyle,
       Color,
       Link.configure({

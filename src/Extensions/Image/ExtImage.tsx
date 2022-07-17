@@ -71,7 +71,13 @@ export const Image = Node.create<ImageOptions>({
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ['img', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes)]
+    const myattr = {
+      src: HTMLAttributes.src,
+      alt: HTMLAttributes.alt,
+      title: HTMLAttributes.title
+    };
+    console.log('myattr = ', myattr);
+    return ['img', mergeAttributes(this.options.HTMLAttributes, myattr)];
   },
 
   addCommands() {
@@ -98,22 +104,22 @@ export const Image = Node.create<ImageOptions>({
       }),
     ]
   },
-  addProseMirrorPlugins() {
-    return [
-      new Plugin({
-        key: new PluginKey('eventHandler'),
-        props: {
-          handleDOMEvents: {
-            paste: (view, event: Event) => {
-              // const html = (event as ClipboardEvent).clipboardData?.getData('text/html');
-              event.preventDefault();
-              return false;
-            },
-          },
-          // … and many, many more.
-          // Here is the full list: https://prosemirror.net/docs/ref/#view.EditorProps
-        },
-      }),
-    ]
-  },
+  // addProseMirrorPlugins() {
+  //   return [
+  //     new Plugin({
+  //       key: new PluginKey('eventHandler'),
+  //       props: {
+  //         handleDOMEvents: {
+  //           paste: (view, event: Event) => {
+  //             // const html = (event as ClipboardEvent).clipboardData?.getData('text/html');
+  //             event.preventDefault();
+  //             return false;
+  //           },
+  //         },
+  //         // … and many, many more.
+  //         // Here is the full list: https://prosemirror.net/docs/ref/#view.EditorProps
+  //       },
+  //     }),
+  //   ]
+  // },
 });
