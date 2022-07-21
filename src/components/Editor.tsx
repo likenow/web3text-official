@@ -39,6 +39,7 @@ import Paper from '@mui/material/Paper';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
+import { EventBus } from '../EventBus/EventBus';
 
 const levels = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
 
@@ -72,7 +73,6 @@ const MenuBar = ({ editor } : any) => {
     editor.chain().focus().setColor(val).run();
   };
 
-  const [fileDownloadUrl, setFileDownloadUrl] = useState<string>('');
   useEffect(() => {
     if (!editor) {
       return undefined
@@ -107,15 +107,7 @@ const MenuBar = ({ editor } : any) => {
   // }, [editor]);
 
   const htmlExample = '<p>Example <strong>Text</strong></p>'
-  const htmlImport = useCallback(() => {
-    editor.commands.setContent(htmlExample)
-  }, [editor]);
 
-  const htmlExport: any = useCallback(() => {
-    let content = editor.getHTML()
-    console.log(content)
-    return content
-  }, [editor]);
   const jsonExample = {
     type: 'doc',
     content: [
@@ -152,7 +144,6 @@ const MenuBar = ({ editor } : any) => {
     // console.log(output);
     const blob = new Blob([output], {type: 'application/json'});
     const url = URL.createObjectURL(blob);
-    setFileDownloadUrl(url);
     console.log('url = ',url);
     a.download = 'yourArticle.json';
     a.href = url;
@@ -161,9 +152,8 @@ const MenuBar = ({ editor } : any) => {
     a.remove();
     // free up storage--no longer needed.
     URL.revokeObjectURL(url);
-    setFileDownloadUrl('');
   }, [editor]);
-
+  
   const generateHTMLFromJSON = useMemo(() => {
     return generateHTML(jsonExample, [
       StarterKit,
@@ -295,15 +285,6 @@ const MenuBar = ({ editor } : any) => {
           </Button> */}
         </ButtonGroup>
       </Paper>
-
-      <ButtonGroup sx={{marginTop: 2, marginBottom: 2}} variant="outlined" aria-label="outlined button group">
-        <Button onClick={htmlExport}> Export HTML </Button>
-        <Button onClick={htmlImport}> Import HTML </Button>
-        <Button onClick={jsonExport}> Export JSON </Button>
-        <Button onClick={jsonImport}> Import JSON </Button>
-        <Button onClick={htmlFromJson}> Generate HTML from JSON </Button>
-        <Button onClick={jsonFromHtml}> Generate JSON from HTML </Button>
-      </ButtonGroup>
       
       <Paper
         elevation={0}
@@ -353,6 +334,34 @@ const MenuBar = ({ editor } : any) => {
       </Menu>
     </div>
   );
+}
+
+const registImportHtmlFileEvent = (editor: any) => {
+  EventBus.getInstance().register('import_html_file_event', (content: string) => {
+    if(content) {
+      editor.commands.setContent(content);
+    } else {
+      console.log('content empty !!!');
+    }
+  });
+}
+
+const registDownloadHtmlFileEvent = (editor: any) => {
+  EventBus.getInstance().register('download_html_file_event', () => {
+    const a: HTMLAnchorElement = document.createElement('a');
+    document.body.appendChild(a);
+    let content = editor.getHTML();
+    const blob = new Blob([content], {type: 'text/html'});
+    const url = URL.createObjectURL(blob);
+    console.log('url = ',url);
+    a.download = 'YourArticle.html';
+    a.href = url;
+    a.setAttribute('style', 'display: none');
+    a.click();
+    a.remove();
+    // free up storage--no longer needed.
+    URL.revokeObjectURL(url);
+  });
 }
 
 const Editor = () => {
@@ -432,6 +441,12 @@ const Editor = () => {
     `,
     autofocus: 1,
   });
+  if (!editor) {
+    return null;
+  }
+
+  registImportHtmlFileEvent(editor);
+  registDownloadHtmlFileEvent(editor);
 
   return (
     <div

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -15,11 +15,12 @@ import ShareIcon from '@mui/icons-material/Share';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import InputIcon from '@mui/icons-material/Input';
-import { useState, useEffect } from 'react';
 import { get, subscribe } from '../store';
 import ConnectWallet, { connectWallet } from './ConnectWallet';
 import showMessage from './showMessage';
 import { useTranslation } from 'react-i18next';
+import useTextFileReader from './CustomFileReader';
+import { EventBus } from '../EventBus/EventBus';
 
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
@@ -70,7 +71,8 @@ function ConnectSection() {
 
 const ResponsiveAppBar = () => {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
-  
+  const {fileContent, isReading, error, trigger} = useTextFileReader();
+
   const { t, i18n } = useTranslation();
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -79,6 +81,18 @@ const ResponsiveAppBar = () => {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
+  const downloadClick = () => {
+    console.log('downloadClick');
+    EventBus.getInstance().dispatch<string>('download_html_file_event');
+  }
+
+  useEffect( () => {
+    if (fileContent) {
+      console.log('read file ok');
+      EventBus.getInstance().dispatch<string>('import_html_file_event', fileContent);
+    }
+  }, [fileContent]);
 
   return (
     <AppBar color="inherit" position="static">
@@ -122,7 +136,7 @@ const ResponsiveAppBar = () => {
               ))}
             </Menu>
             <Tooltip title="import">
-              <IconButton>
+              <IconButton onClick={trigger}>
                 <InputIcon />
               </IconButton>
             </Tooltip>
@@ -133,7 +147,7 @@ const ResponsiveAppBar = () => {
               </IconButton>
             </Tooltip>
             <Tooltip title="download">
-              <IconButton>
+              <IconButton onClick={downloadClick}>
                 <FileDownloadIcon />
               </IconButton>
             </Tooltip>
