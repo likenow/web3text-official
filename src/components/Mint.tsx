@@ -43,11 +43,10 @@ const StyledMintButton = styled.div`
   display: inline-block;
   width: 140px;
   text-align: center;
-  padding: 10px 10px;
-  border: 1px solid #000;
+  padding: 5px;
   border-radius: 16px;
-  color: #000;
-  background: #eee;
+  color: #ffffff;
+  background: #eeeeee;
   cursor: ${(props: any) => {
     return props.minting || props.disabled ? "not-allowed" : "pointer";
   }};
@@ -314,7 +313,7 @@ function Mint() {
         cursor: 'not-allowed',
       }}
     >
-      尚未开始
+      未开始
     </StyledMintButton>
   );
 
@@ -327,7 +326,7 @@ function Mint() {
           cursor: 'not-allowed',
         }}
       >
-        请先连接钱包
+        未连接钱包
       </StyledMintButton>
     );
   } else {
@@ -342,7 +341,8 @@ function Mint() {
           minting={minting}
           onClick={texts2Image}
           style={{
-            background: '#fff'
+            color: '#ffffff',
+            background: 'linear-gradient(191deg, #FD2F79 0%, #FD6F6F 100%)',
           }}
         >
           {/* 铸造文章 NFT{minting ? '中...' : ''} */}

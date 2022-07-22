@@ -9,7 +9,7 @@ import { Color } from '@tiptap/extension-color';
 import TextStyle from '@tiptap/extension-text-style';
 import Link from '@tiptap/extension-link';
 // import { generateHTML, generateJSON } from '@tiptap/html';
-import React, { useEffect, useCallback, useState, useMemo } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import FormatAlignCenterIcon from '@mui/icons-material/FormatAlignCenter';
 import FormatAlignLeftIcon from '@mui/icons-material/FormatAlignLeft';
 import FormatAlignRightIcon from '@mui/icons-material/FormatAlignRight';
@@ -30,18 +30,21 @@ import FormatColorTextIcon from '@mui/icons-material/FormatColorText';
 import FormatUnderlinedIcon from '@mui/icons-material/FormatUnderlined';
 import AddLinkIcon from '@mui/icons-material/AddLink';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+// import EditOffIcon from '@mui/icons-material/EditOff';
 import Mint from './Mint';
 // import { getDownloadSafeImgSrc, getImgSrcs } from '../utils';
 import IndexedDb from '../IndexedDb';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
-import Paper from '@mui/material/Paper';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
 import { EventBus } from '../EventBus/index';
+import { styled } from '@mui/material/styles';
 
 const levels = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
+
+const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
 
 const MenuBar = ({ editor } : any) => {
   const [editable, setEditable] = useState<boolean>(true);
@@ -51,6 +54,14 @@ const MenuBar = ({ editor } : any) => {
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
+  // const editableHandler = () => {
+  //   if (editable) {
+  //     setEditable(false);
+  //   } else {
+  //     setEditable(true);
+  //   }
+  // }
+
   const handleMenuItemClick = (
     event: React.MouseEvent<HTMLLIElement, MouseEvent>,
     index: number,
@@ -144,128 +155,111 @@ const MenuBar = ({ editor } : any) => {
   return (
     <div
       style={{
-        marginTop: '2rem'
+        position: 'fixed',
+        marginLeft: '2rem'
       }}
     >
-      <Paper
-        elevation={0}
-        sx={{
-          display: 'flex',
-          flexWrap: 'wrap',
-        }}
-      >
-        <ButtonGroup size="small" variant="outlined" aria-label="outlined button group">
-          <Button onClick={() => editor.chain().focus().undo().run()}>
-            <UndoIcon />
-          </Button>
-          <Button onClick={() => editor.chain().focus().redo().run()}>
-            <RedoIcon />
-          </Button>
-          <Button
-            id="demo-positioned-button"
-            aria-controls={open ? 'demo-positioned-menu' : undefined}
-            aria-haspopup="true"
-            aria-expanded={open ? 'true' : undefined}
-            onClick={handleClick}
-          >
-            {levels[level]}
-            <ArrowDropDownIcon />
-          </Button>
-          <Button onClick={() => {
-            editor.chain().focus().toggleBold().run();
-          }}>
-            <FormatBoldIcon />
-          </Button>
-          <Button onClick={() => {
-            editor.chain().focus().toggleItalic().run();
-          }}>
-            <FormatItalicIcon />
-          </Button>
-          <Button onClick={() => {
-            editor.chain().focus().toggleUnderline().run();
-          }}>
-            <FormatUnderlinedIcon />
-          </Button>
-          <Button onClick={() => {
-            editor.chain().focus().toggleStrike().run();
-          }}>
-            <StrikethroughSIcon />
-          </Button>
-          <Button value="color" aria-label="color">
-            <FormatColorTextIcon />
-            <input
-              type="color"
-              onInput={handleColor}
-              value={editor.getAttributes('textStyle').color}
-            />
-            <ArrowDropDownIcon />
-          </Button>
-          <Button onClick={() => {
-            editor.chain().focus().setTextAlign('left').run();
-          }}>
-            <FormatAlignLeftIcon />
-          </Button>
-          <Button onClick={() => {
-            editor.chain().focus().setTextAlign('center').run();
-          }}>
-            <FormatAlignCenterIcon />
-          </Button>
-          <Button onClick={() => {
-            editor.chain().focus().setTextAlign('right').run();
-          }}>
-            <FormatAlignRightIcon />
-          </Button>
-          <Button onClick={() => {
-            editor.chain().focus().setTextAlign('justify').run();
-          }}>
-            <FormatAlignJustifyIcon />
-          </Button>
-          <Button onClick={() => editor.chain().focus().toggleBulletList().run()}>
-            <FormatListBulletedIcon />
-          </Button>
-          <Button onClick={() => editor.chain().focus().toggleOrderedList().run()}>
-            <FormatListNumberedIcon />
-          </Button>
-          <Button onClick={() => editor.chain().focus().toggleCode().run()}>
-            <CodeIcon />
-          </Button>
-          <Button onClick={() => editor.chain().focus().toggleCodeBlock().run()}>
-            <DataObjectIcon />
-          </Button>
-          <Button onClick={() => editor.chain().focus().toggleBlockquote().run()}>
-            <FormatQuoteIcon />
-          </Button>
-          <Button onClick={() => editor.chain().focus().setHorizontalRule().run()}>
-            <HorizontalRuleIcon />
-          </Button>
-          <Button onClick={setLink}>
-            <AddLinkIcon />
-          </Button>
-          {/* <Button onClick={addImage}> 
-            <AddPhotoAlternateIcon />
-          </Button> */}
-        </ButtonGroup>
-      </Paper>
-      
-      <Paper
-        elevation={0}
-        sx={{
-          display: 'flex',
-          flexWrap: 'wrap',
-        }}
-      >
-        <input
-          type="checkbox"
-          id="editable"
-          checked={editable}
-          onChange={event => {
-            setEditable(event.target.checked);
-          }}
-        />
-        <Button>editable</Button>
-      </Paper>
-
-      <Mint />
+      <ButtonGroup size="small" variant="outlined" aria-label="small button group">
+        {/* <Button onClick={editableHandler} sx={editable?{
+          color: '#1976d2'
+        }:{
+          color: '#d32f2f'
+        }}>
+          <EditOffIcon />
+        </Button> */}
+        <Button onClick={() => editor.chain().focus().undo().run()}>
+          <UndoIcon />
+        </Button>
+        <Button onClick={() => editor.chain().focus().redo().run()}>
+          <RedoIcon />
+        </Button>
+        <Button
+          id="demo-positioned-button"
+          aria-controls={open ? 'demo-positioned-menu' : undefined}
+          aria-haspopup="true"
+          aria-expanded={open ? 'true' : undefined}
+          onClick={handleClick}
+        >
+          {levels[level]}
+          <ArrowDropDownIcon />
+        </Button>
+        <Button onClick={() => {
+          editor.chain().focus().toggleBold().run();
+        }}>
+          <FormatBoldIcon />
+        </Button>
+        <Button onClick={() => {
+          editor.chain().focus().toggleItalic().run();
+        }}>
+          <FormatItalicIcon />
+        </Button>
+        <Button onClick={() => {
+          editor.chain().focus().toggleUnderline().run();
+        }}>
+          <FormatUnderlinedIcon />
+        </Button>
+        <Button onClick={() => {
+          editor.chain().focus().toggleStrike().run();
+        }}>
+          <StrikethroughSIcon />
+        </Button>
+        <Button value="color" aria-label="color">
+          <FormatColorTextIcon />
+          <input
+            type="color"
+            onInput={handleColor}
+            value={editor.getAttributes('textStyle').color}
+          />
+          <ArrowDropDownIcon />
+        </Button>
+      </ButtonGroup>
+      <ButtonGroup size="small" variant="outlined" aria-label="small button group">
+        <Button onClick={() => {
+          editor.chain().focus().setTextAlign('left').run();
+        }}>
+          <FormatAlignLeftIcon />
+        </Button>
+        <Button onClick={() => {
+          editor.chain().focus().setTextAlign('center').run();
+        }}>
+          <FormatAlignCenterIcon />
+        </Button>
+        <Button onClick={() => {
+          editor.chain().focus().setTextAlign('right').run();
+        }}>
+          <FormatAlignRightIcon />
+        </Button>
+        <Button onClick={() => {
+          editor.chain().focus().setTextAlign('justify').run();
+        }}>
+          <FormatAlignJustifyIcon />
+        </Button>
+        <Button onClick={() => editor.chain().focus().toggleBulletList().run()}>
+          <FormatListBulletedIcon />
+        </Button>
+        <Button onClick={() => editor.chain().focus().toggleOrderedList().run()}>
+          <FormatListNumberedIcon />
+        </Button>
+        <Button onClick={() => editor.chain().focus().toggleCode().run()}>
+          <CodeIcon />
+        </Button>
+        <Button onClick={() => editor.chain().focus().toggleCodeBlock().run()}>
+          <DataObjectIcon />
+        </Button>
+        <Button onClick={() => editor.chain().focus().toggleBlockquote().run()}>
+          <FormatQuoteIcon />
+        </Button>
+        <Button onClick={() => editor.chain().focus().setHorizontalRule().run()}>
+          <HorizontalRuleIcon />
+        </Button>
+        <Button onClick={setLink}>
+          <AddLinkIcon />
+        </Button>
+        {/* <Button onClick={addImage}> 
+          <AddPhotoAlternateIcon />
+        </Button> */}
+        <Mint />
+      </ButtonGroup>
       <Menu
         id="demo-positioned-menu"
         aria-labelledby="demo-positioned-button"
@@ -360,6 +354,8 @@ const Editor = () => {
         };
         // 存入 idb
         await indexedDb.putValue(tbName, article);
+        // let ret = await indexedDb.getValueByIndex(tbName, 'address');
+        // console.log(ret);
       }
       runIndexDb();
     }
@@ -376,14 +372,15 @@ const Editor = () => {
   }
 
   return (
-    <div
-      style={{
-        width: '70%',
-        margin:' 0 auto'
-      }}
-    >
+    <div>
       <MenuBar editor={editor} />
-      <div id='editorContainer'>
+      <Offset />
+      <div id='editorContainer'
+        style={{
+          width: '70%',
+          margin:'0 auto',
+        }}
+      >
         <EditorContent editor={editor} />
       </div>
     </div>
