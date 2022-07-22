@@ -8,7 +8,7 @@ import Underline from '@tiptap/extension-underline';
 import { Color } from '@tiptap/extension-color';
 import TextStyle from '@tiptap/extension-text-style';
 import Link from '@tiptap/extension-link';
-import { generateHTML, generateJSON } from '@tiptap/html';
+// import { generateHTML, generateJSON } from '@tiptap/html';
 import React, { useEffect, useCallback, useState, useMemo } from 'react';
 import FormatAlignCenterIcon from '@mui/icons-material/FormatAlignCenter';
 import FormatAlignLeftIcon from '@mui/icons-material/FormatAlignLeft';
@@ -20,7 +20,7 @@ import StrikethroughSIcon from '@mui/icons-material/StrikethroughS';
 import CodeIcon from '@mui/icons-material/Code';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
-import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
+// import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import UndoIcon from '@mui/icons-material/Undo';
 import RedoIcon from '@mui/icons-material/Redo';
 import FormatQuoteIcon from '@mui/icons-material/FormatQuote';
@@ -31,7 +31,7 @@ import FormatUnderlinedIcon from '@mui/icons-material/FormatUnderlined';
 import AddLinkIcon from '@mui/icons-material/AddLink';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import Mint from './Mint';
-import { getDownloadSafeImgSrc, getImgSrcs } from '../utils';
+// import { getDownloadSafeImgSrc, getImgSrcs } from '../utils';
 import IndexedDb from '../IndexedDb';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
@@ -39,15 +39,13 @@ import Paper from '@mui/material/Paper';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
-import { EventBus } from '../EventBus/EventBus';
+import { EventBus } from '../EventBus/index';
 
 const levels = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
 
 const MenuBar = ({ editor } : any) => {
   const [editable, setEditable] = useState<boolean>(true);
   const [level, setLevel] = React.useState(1);
-  const [alignment, setAlignment] = React.useState('left');
-  const [formats, setFormats] = React.useState(['normal']);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -106,79 +104,42 @@ const MenuBar = ({ editor } : any) => {
   //   }
   // }, [editor]);
 
-  const htmlExample = '<p>Example <strong>Text</strong></p>'
+  useEffect(() => {
+    const handleImportHtmlFile = (content: string)=> {
+      if(content) {
+        editor.commands.setContent(content);
+      } else {
+        console.log('content empty !!!');
+      }
+    };
+    const e = EventBus.getInstance().register('import_html_file_event', handleImportHtmlFile);
+    
+    return function cleanup() {
+      e.unregister();
+    };
+  });
 
-  const jsonExample = {
-    type: 'doc',
-    content: [
-      {
-        type: 'paragraph',
-        content: [
-          {
-            type: 'text',
-            text: 'Example ',
-          },
-          {
-            type: 'text',
-            marks: [
-              {
-                type: 'bold',
-              },
-            ],
-            text: 'Text',
-          },
-        ],
-      },
-    ],
-  }
-  const jsonImport = useCallback(() => {
-    editor.commands.setContent(jsonExample)
-  }, [editor]);
-  
-  const jsonExport = useCallback(() => {
-    const a: HTMLAnchorElement = document.createElement('a');
-    document.body.appendChild(a);
-    let content = editor.getJSON();
-    // Prepare the file
-    let output = JSON.stringify(content, null, 4);
-    // console.log(output);
-    const blob = new Blob([output], {type: 'application/json'});
-    const url = URL.createObjectURL(blob);
-    console.log('url = ',url);
-    a.download = 'yourArticle.json';
-    a.href = url;
-    a.setAttribute('style', 'display: none');
-    a.click();
-    a.remove();
-    // free up storage--no longer needed.
-    URL.revokeObjectURL(url);
-  }, [editor]);
-  
-  const generateHTMLFromJSON = useMemo(() => {
-    return generateHTML(jsonExample, [
-      StarterKit,
-      // Image
-    ])
-  }, [jsonExample]);
-
-  const generateJSONFromHTML = useMemo(() => {
-    return generateJSON(htmlExample, [
-      StarterKit,
-      // Image
-    ])
-  }, [htmlExample]);
-
-  const htmlFromJson = () => {
-    console.log(generateHTMLFromJSON)
-  }
-
-  const jsonFromHtml = () => {
-    console.log(generateJSONFromHTML)
-  }
-  
-  if (!editor) {
-    return null;
-  }
+  useEffect(() => {
+    const handleDownloadHtmlFile = () => {
+      const a: HTMLAnchorElement = document.createElement('a');
+      document.body.appendChild(a);
+      let content = editor.getHTML();
+      const blob = new Blob([content], {type: 'text/html'});
+      const url = URL.createObjectURL(blob);
+      console.log('url = ',url);
+      a.download = 'YourArticle.html';
+      a.href = url;
+      a.setAttribute('style', 'display: none');
+      a.click();
+      a.remove();
+      // free up storage--no longer needed.
+      URL.revokeObjectURL(url);
+    };
+    const e = EventBus.getInstance().register('download_html_file_event', handleDownloadHtmlFile);
+    return function cleanup() {
+      e.unregister();
+    };
+  });
 
   return (
     <div
@@ -336,74 +297,7 @@ const MenuBar = ({ editor } : any) => {
   );
 }
 
-const registImportHtmlFileEvent = (editor: any) => {
-  EventBus.getInstance().register('import_html_file_event', (content: string) => {
-    if(content) {
-      editor.commands.setContent(content);
-    } else {
-      console.log('content empty !!!');
-    }
-  });
-}
-
-const registDownloadHtmlFileEvent = (editor: any) => {
-  EventBus.getInstance().register('download_html_file_event', () => {
-    const a: HTMLAnchorElement = document.createElement('a');
-    document.body.appendChild(a);
-    let content = editor.getHTML();
-    const blob = new Blob([content], {type: 'text/html'});
-    const url = URL.createObjectURL(blob);
-    console.log('url = ',url);
-    a.download = 'YourArticle.html';
-    a.href = url;
-    a.setAttribute('style', 'display: none');
-    a.click();
-    a.remove();
-    // free up storage--no longer needed.
-    URL.revokeObjectURL(url);
-  });
-}
-
 const Editor = () => {
-  useEffect(() => {
-    const runIndexDb = async () => {
-      const tbName = 'articles';
-      const indexedDb = new IndexedDb('article-db');
-      await indexedDb.createObjectStore(['articles'], ['address', 'timestamp']);
-      let testval = {
-        id: 1,
-        title: 'Thrones',
-        address: 'abc',
-        desc: 'A Game of Thrones',
-        body: 'bala bala A Game of Thrones',
-        timestamp: Date.now(),
-      };
-      let testval1 = {
-        id: 2,
-        title: 'Fire And Ice',
-        address: 'def',
-        desc: 'A Song of Fire and Ice',
-        body: 'bala bala A Song of Fire and Ice',
-        timestamp: Date.now(),
-      };
-      let testval2 = {
-        id: 3,
-        title: 'Harry Potter',
-        address: 'ghi',
-        desc: 'Harry Potter and the Chamber of Secrets',
-        body: 'bala bala Harry Potter and the Chamber of Secrets',
-        timestamp: Date.now(),
-      };
-      // await indexedDb.putValue(tbName, testval);
-      await indexedDb.putBulkValue(tbName, [testval, testval1]);
-      // await indexedDb.getValue(dbName, 1);
-      await indexedDb.getValueByIndex(tbName, 'address');
-      // await indexedDb.getAllValue(tbName);
-      // await indexedDb.deleteValue(tbName, 1);
-    }
-    // runIndexDb();
-  }, []);
-
   /// https://tiptap.dev/extensions tiptap扩展
   /// https://tiptap.dev/api/extensions/ tiptap扩展文档
   const editor = useEditor({
@@ -441,12 +335,45 @@ const Editor = () => {
     `,
     autofocus: 1,
   });
+  
+  useEffect(() => {
+    if (!editor) {
+      console.log('editor is null');
+      return;
+    }
+    const onUpdate = () => {
+      // The content has changed.
+      const runIndexDb = async () => {
+        const tbName = 'articles';
+        const indexedDb = new IndexedDb('article-db');
+        await indexedDb.createObjectStore(['articles'], ['address', 'timestamp']);
+        
+        let content = editor.getJSON();
+        let contentStr = JSON.stringify(content);
+        let article = {
+          id: 1,
+          title: '',
+          address: 'abc',
+          desc: '',
+          body: contentStr,
+          timestamp: Date.now(),
+        };
+        // 存入 idb
+        await indexedDb.putValue(tbName, article);
+      }
+      runIndexDb();
+    }
+    editor.on('update', onUpdate);
+
+    return function cleanup() {
+      // … and unbind.
+      editor.off('update', onUpdate);
+    }
+  }, [editor]);
+
   if (!editor) {
     return null;
   }
-
-  registImportHtmlFileEvent(editor);
-  registDownloadHtmlFileEvent(editor);
 
   return (
     <div
