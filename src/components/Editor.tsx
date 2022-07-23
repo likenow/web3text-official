@@ -48,7 +48,7 @@ const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
 
 const MenuBar = ({ editor } : any) => {
   const [editable, setEditable] = useState<boolean>(true);
-  const [level, setLevel] = React.useState(1);
+  const [level, setLevel] = React.useState(0);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {

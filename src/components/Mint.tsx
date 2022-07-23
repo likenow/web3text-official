@@ -45,8 +45,8 @@ const StyledMintButton = styled.div`
   text-align: center;
   padding: 5px;
   border-radius: 16px;
-  color: #ffffff;
-  background: #eeeeee;
+  color: #FFF;
+  background: #EEE;
   cursor: ${(props: any) => {
     return props.minting || props.disabled ? "not-allowed" : "pointer";
   }};
@@ -308,7 +308,7 @@ function Mint() {
   let mintButton = (
     <StyledMintButton
       style={{
-        background: '#eee',
+        background: '#EEE',
         color: '#999',
         cursor: 'not-allowed',
       }}
@@ -321,7 +321,7 @@ function Mint() {
     mintButton = (
       <StyledMintButton
         style={{
-          background: '#eee',
+          background: '#EEE',
           color: '#999',
           cursor: 'not-allowed',
         }}
@@ -341,7 +341,7 @@ function Mint() {
           minting={minting}
           onClick={texts2Image}
           style={{
-            color: '#ffffff',
+            color: '#FFF',
             background: 'linear-gradient(191deg, #FD2F79 0%, #FD6F6F 100%)',
           }}
         >
@@ -362,19 +362,18 @@ function Mint() {
         TransitionComponent={Transition}
       >
         <Backdrop
-          sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          sx={{ color: '#FFF', zIndex: (theme) => theme.zIndex.drawer + 1 }}
           open={hud}
           onClick={()=> {
             setHud(false);
           }}
         >
-          <CircularProgress color="inherit" />
+          <CircularProgress />
         </Backdrop>
-        <AppBar color="inherit" sx={{ position: 'relative' }}>
+        <AppBar elevation={1} sx={{ position: 'relative', color: '#000', backgroundColor: '#FFF' }}>
           <Toolbar>
             <IconButton
               edge="start"
-              color="inherit"
               onClick={handleClose}
               aria-label="close"
               sx={{ ml: 2 }}
@@ -386,7 +385,6 @@ function Mint() {
             </Typography>
             <Typography sx={{ flexGrow: 1}} variant="h5" component="div">Preview</Typography>
             <IconButton
-              color="inherit"
               sx={{ ml: 2 }}
               onClick={async () => {
                 if (minting) {

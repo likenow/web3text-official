@@ -83,8 +83,13 @@ function ConnectWallet(props: any) {
   if (address && !loading) {
     return (
       <Chip
+        sx={{
+          '& .MuiChip-deleteIcon': {
+            color: '#AFB7FF',
+          },
+        }}
+        style={{ width: '140px', fontSize: 14 , color: '#3C4DF4', backgroundColor: '#ECEEFF'}}
         label={address}
-        color="primary"
         onDelete={async () => {
           await disconnectWallet();
           setAddress(null);
@@ -98,10 +103,10 @@ function ConnectWallet(props: any) {
   return (
     <>
       <Chip
-        icon={<AccountBalanceWalletIcon />}
-        style={{ fontSize: 16 }}
+        icon={<AccountBalanceWalletIcon sx={{ "&&": { color: "#FFF" } }} />}
+        style={{ width: '140px', fontSize: 14 , color: '#FFF', 
+        background: 'linear-gradient(180deg, #1D5EE7 0%, #1D30E7 100%)'}}
         label={loading ? "连接中..." : "连接钱包"}
-        color="primary"
         onClick={async () => {
           setLoading(true);
           try {

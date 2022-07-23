@@ -144,7 +144,7 @@ const ResponsiveAppBar = () => {
   }, [fileContent]);
 
   return (
-    <AppBar elevation={1} color="inherit" position="static" sx={{marginBottom: '1rem'}}>
+    <AppBar elevation={1} position="static" sx={{marginBottom: '1rem', backgroundColor: '#FFF'}}>
       <Container maxWidth="xl">
         <Toolbar id="back-to-top-anchor" disableGutters>
           <Box sx={{ flexGrow: 1}}>
@@ -153,7 +153,7 @@ const ResponsiveAppBar = () => {
               style={{ backgroundColor: 'transparent', textTransform: 'none' }}
             >
               <img width={32} height={32} alt="Web3text" src="/logo192.png" />
-              <Typography variant="h6" sx={{ml:1, color: 'black'}}>Web3text</Typography>
+              <Typography variant="h6" sx={{ml:1, color: '#000000'}}>Web3text</Typography>
             </Button>
           </Box>
           <Box>
