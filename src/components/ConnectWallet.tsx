@@ -5,6 +5,7 @@ import Web3Modal from 'web3modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import Chip from '@mui/material/Chip';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import { useTranslation } from 'react-i18next';
 
 import showMessage from './showMessage';
 import { set, get, subscribe } from '../store';
@@ -66,6 +67,7 @@ async function disconnectWallet() {
 }
 
 function ConnectWallet(props: any) {
+  const { t } = useTranslation();
   const [address, setAddress] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -106,7 +108,7 @@ function ConnectWallet(props: any) {
         icon={<AccountBalanceWalletIcon sx={{ "&&": { color: "#FFF" } }} />}
         style={{ width: '140', fontSize: 14 , color: '#FFF', 
         background: 'linear-gradient(180deg, #1D5EE7 0%, #1D30E7 100%)'}}
-        label={loading ? "连接中..." : "连接钱包"}
+        label={loading ? t('cwing') : t('connectwallet')}
         onClick={async () => {
           setLoading(true);
           try {
@@ -137,7 +139,7 @@ function ConnectWallet(props: any) {
             setAddress(null);
             showMessage({
               type: 'error',
-              title: '连接钱包失败，请重试',
+              title: t('retry'),
               body: err.message,
             });
           }

@@ -76,6 +76,7 @@ const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 function ConnectSection() {
   const [fullAddress, setFullAddress] = useState(null);
   // const [numberMinted, setNumberMinted] = useState(0);
+  const { t } = useTranslation();
 
   useEffect(() => {
     (async () => {
@@ -105,7 +106,7 @@ function ConnectSection() {
     } catch (err: any) {
       showMessage({
         type: 'error',
-        title: '获取合约状态失败',
+        title: t('getcontractE'),
         body: err.message,
       });
     }
@@ -157,7 +158,7 @@ const ResponsiveAppBar = () => {
             </Button>
           </Box>
           <Box>
-            <Tooltip title="Open settings">
+            <Tooltip title={t('opensetting')}>
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <MenuIcon />
               </IconButton>
@@ -184,28 +185,28 @@ const ResponsiveAppBar = () => {
                 </MenuItem>
               ))}
             </Menu>
-            <Tooltip title="import">
+            <Tooltip title={t('import')}>
               <IconButton onClick={trigger}>
                 <InputIcon />
               </IconButton>
             </Tooltip>
             
-            <Tooltip title="upload">
+            <Tooltip title={t('upload')}>
               <IconButton>
                 <CloudUploadIcon />
               </IconButton>
             </Tooltip>
-            <Tooltip title="download">
+            <Tooltip title={t('download')}>
               <IconButton onClick={downloadClick}>
                 <FileDownloadIcon />
               </IconButton>
             </Tooltip>
-            <Tooltip title="share">
+            <Tooltip title={t('share')}>
               <IconButton>
                 <ShareIcon />
               </IconButton>
             </Tooltip>
-            <Tooltip title="en/zh">
+            <Tooltip title={t('enzh')}>
               <IconButton onClick={() => {
                 // https://www.i18next.com/overview/api#changelanguage
                 i18n.changeLanguage('zh-CN', (err, t) => {

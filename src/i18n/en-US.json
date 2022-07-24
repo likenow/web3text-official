@@ -1,4 +1,20 @@
 {
+
+	"uncw": "Unconnect",
+	"mintS": "Mint Success",
+	"mintE": "Mint Error",
+	"cwing": "Connect...",
+	"retry": "Connect failed retry please",
+	"getcontractE": "Get Contract Error",
+	"opensetting":"Open settings",
+	"import":"Import",
+	"upload":"Upload",
+	"download":"Download",
+	"share":"Share",
+	"enzh":"EN/ZH",
+	"preview": "Preview",
+	"close": "Close",
+	"confirm": "Confirm",
 	"mint": "Mint NFT",
 	"connectwallet": "Connect Wallet"
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import * as ReactDOM from 'react-dom/client';
 
 import Dialog from '@mui/material/Dialog';
 import styled from '@emotion/styled';
@@ -73,17 +73,17 @@ function SimpleModal(props: any) {
 function showMessage(options: any) {
   const { title, body, type } = options;
   const container = document.createDocumentFragment();
+  const root = ReactDOM.createRoot(container);
 
   function render({visible} : {visible:any}) {
-    ReactDOM.render(
+    root.render(
       <SimpleModal
         title={title}
         visible={visible}
         body={body}
         type={type}
         onClose={close}
-      />,
-      container
+      />
     );
   }
 

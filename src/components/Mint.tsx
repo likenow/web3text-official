@@ -117,7 +117,7 @@ function Mint() {
     } catch (err: any) {
       showMessage({
         type: 'error',
-        title: '获取合约状态失败',
+        title: t('getcontractE'),
         body: err.message,
       });
     }
@@ -187,7 +187,7 @@ function Mint() {
         console.log('res == ',response);
         showMessage({
           type: 'success',
-          title: '铸造成功',
+          title: t('mintS'),
           body: (
             <div>
               <a
@@ -214,7 +214,7 @@ function Mint() {
       console.log(err);
       showMessage({
         type: 'error',
-        title: '铸造失败',
+        title: t('mintE'),
         body: err.message,
       });
     }
@@ -326,7 +326,7 @@ function Mint() {
           cursor: 'not-allowed',
         }}
       >
-        未连接钱包
+        { t('uncw') }
       </StyledMintButton>
     );
   } else {
@@ -381,9 +381,9 @@ function Mint() {
               <CloseIcon />
             </IconButton>
             <Typography sx={{ ml: 1, flexGrow: 1}} variant="h6" component="div">
-              Close
+              {t('close')}
             </Typography>
-            <Typography sx={{ flexGrow: 1}} variant="h5" component="div">Preview</Typography>
+            <Typography sx={{ flexGrow: 1}} variant="h5" component="div">{t('preview')}</Typography>
             <IconButton
               sx={{ ml: 2 }}
               onClick={async () => {
@@ -396,7 +396,7 @@ function Mint() {
               <CheckIcon />
             </IconButton>
             <Typography sx={{ ml: 1}} variant="h6" component="div">
-              Mint
+              {t('confirm')}
             </Typography>
           </Toolbar>
         </AppBar>
