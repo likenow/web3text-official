@@ -47,14 +47,14 @@ function SimpleModal(props: any) {
             {props.type === 'success' ? (
               <CheckCircleIcon
                 sx={{
-                  fontSize: '40px',
+                  fontSize: '40',
                 }}
                 color='success'
               ></CheckCircleIcon>
             ) : (
               <ErrorIcon
                 sx={{
-                  fontSize: '40px',
+                  fontSize: '40',
                 }}
                 color='error'
               ></ErrorIcon>

@@ -156,7 +156,12 @@ const MenuBar = ({ editor } : any) => {
     <div
       style={{
         position: 'fixed',
-        marginLeft: '2rem'
+        zIndex: '1',
+        top: '100',
+        left: '50%',
+        transform: 'translate(-50%)',
+        width: 'fit-content',
+        boxSizing: 'content-box'
       }}
     >
       <ButtonGroup size="small" variant="outlined" aria-label="small button group">
