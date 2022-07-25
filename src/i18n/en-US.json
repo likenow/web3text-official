@@ -1,5 +1,6 @@
 {
-
+	"pleaseTitle": "Please Enter A Title",
+	"pleaseBody": "Please Enter The Body",
 	"uncw": "Unconnect",
 	"mintS": "Mint Success",
 	"mintE": "Mint Error",

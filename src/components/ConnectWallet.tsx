@@ -6,6 +6,7 @@ import WalletConnectProvider from '@walletconnect/web3-provider';
 import Chip from '@mui/material/Chip';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { useTranslation } from 'react-i18next';
+import { EventBus } from '../EventBus/index';
 
 import showMessage from './showMessage';
 import { set, get, subscribe } from '../store';
@@ -53,7 +54,7 @@ export async function connectWallet() {
       contractABI.abi,
       provider
     );
-  }
+    }
 
   return { provider, signer, web3Instance: instance, contract };
 }
@@ -82,72 +83,84 @@ function ConnectWallet(props: any) {
     });
   }, []);
 
-  if (address && !loading) {
-    return (
-      <Chip
-        sx={{
-          '& .MuiChip-deleteIcon': {
-            color: '#AFB7FF',
-          },
-        }}
-        style={{ width: '140', fontSize: 14 , color: '#3C4DF4', backgroundColor: '#ECEEFF'}}
-        label={address}
-        onDelete={async () => {
+  const disconnect = async () => {
+    console.log('disconnect called');
+    await disconnectWallet();
+    setAddress(null);
+    set('address', '');
+    set('fullAddress', '');
+    EventBus.getInstance().dispatch<string>('disconnect_wallet_event');
+  };
+
+  const connect = async () => {
+    setLoading(true);
+    try {
+      const { provider, signer, web3Instance } = await connectWallet();
+      const address = await signer.getAddress();
+      const ens = await provider.lookupAddress(address);
+      setAddress(ens || formatAddress(address));
+      set('address', ens || formatAddress(address));
+      set('fullAddress', address);
+      web3Instance.on('accountsChanged', async (accounts: string | any[]) => {
+        if (accounts.length === 0) {
           await disconnectWallet();
-          setAddress(null);
           set('address', '');
           set('fullAddress', '');
-        }}
-      />
+          setAddress(null);
+        } else {
+          const address = accounts[0];
+          const ens = await provider.lookupAddress(address);
+          setAddress(ens || formatAddress(address));
+          set('address', ens || formatAddress(address));
+          set('fullAddress', address);
+        }
+      });
+      EventBus.getInstance().dispatch<string>('connect_wallet_event', address);
+    } catch (err: any) {
+      await disconnectWallet();
+      set('address', '');
+      set('fullAddress', '');
+      setAddress(null);
+      showMessage({
+        type: 'error',
+        title: t('retry'),
+        body: err.message,
+      });
+    }
+    setLoading(false);
+  };
+  if (address && !loading) {
+    return (
+      <>
+        <Chip
+          sx={{
+            '& .MuiChip-deleteIcon': {
+              color: '#AFB7FF',
+            },
+          }}
+          style={{ width: '140', fontSize: 14 , color: '#3C4DF4', backgroundColor: '#ECEEFF'}}
+          label={address}
+          onDelete={disconnect}
+        />
+      </>
+    );
+  } else {
+    return (
+      <>
+        <Chip
+          icon={<AccountBalanceWalletIcon sx={{ '&&': { color: '#FFF' } }} />}
+          sx={{ 
+            width: '140', 
+            fontSize: 14 , 
+            color: '#FFF', 
+            background: 'linear-gradient(180deg, #1D5EE7 0%, #1D30E7 100%)'
+          }}
+          label={loading ? t('cwing') : t('connectwallet')}
+          onClick={connect}
+        />
+      </>
     );
   }
-
-  return (
-    <>
-      <Chip
-        icon={<AccountBalanceWalletIcon sx={{ "&&": { color: "#FFF" } }} />}
-        style={{ width: '140', fontSize: 14 , color: '#FFF', 
-        background: 'linear-gradient(180deg, #1D5EE7 0%, #1D30E7 100%)'}}
-        label={loading ? t('cwing') : t('connectwallet')}
-        onClick={async () => {
-          setLoading(true);
-          try {
-            const { provider, signer, web3Instance } = await connectWallet();
-            const address = await signer.getAddress();
-            const ens = await provider.lookupAddress(address);
-            setAddress(ens || formatAddress(address));
-            set('address', ens || formatAddress(address));
-            set('fullAddress', address);
-            web3Instance.on('accountsChanged', async (accounts: string | any[]) => {
-              if (accounts.length === 0) {
-                await disconnectWallet();
-                set('address', '');
-                set('fullAddress', '');
-                setAddress(null);
-              } else {
-                const address = accounts[0];
-                const ens = await provider.lookupAddress(address);
-                setAddress(ens || formatAddress(address));
-                set('address', ens || formatAddress(address));
-                set('fullAddress', address);
-              }
-            });
-          } catch (err: any) {
-            await disconnectWallet();
-            set('address', '');
-            set('fullAddress', '');
-            setAddress(null);
-            showMessage({
-              type: 'error',
-              title: t('retry'),
-              body: err.message,
-            });
-          }
-          setLoading(false);
-        }}
-      />
-    </>
-  );
 }
 
 export default ConnectWallet;

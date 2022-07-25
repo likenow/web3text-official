@@ -1,4 +1,6 @@
 {
+	"pleaseTitle": "请输入标题",
+	"pleaseBody": "请输入正文",
 	"uncw": "未连接钱包",
 	"mintS": "铸造成功",
 	"mintE": "铸造失败",
@@ -10,7 +12,7 @@
 	"upload":"上传",
 	"download":"下载",
 	"share":"分享",
-	"enzh":"中/英切换",
+	"enzh":"中/英",
 	"preview": "预览",
 	"close": "关闭",
 	"confirm": "确认",

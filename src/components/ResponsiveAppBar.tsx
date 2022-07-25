@@ -15,9 +15,8 @@ import ShareIcon from '@mui/icons-material/Share';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import InputIcon from '@mui/icons-material/Input';
-import { get, subscribe } from '../store';
-import ConnectWallet, { connectWallet } from './ConnectWallet';
-import showMessage from './showMessage';
+import ToggleButton from '@mui/material/ToggleButton';
+import ConnectWallet from './ConnectWallet';
 import { useTranslation } from 'react-i18next';
 import useTextFileReader from './CustomFileReader';
 import { EventBus } from '../EventBus/EventBus';
@@ -25,6 +24,7 @@ import useScrollTrigger from '@mui/material/useScrollTrigger';
 import Fab from '@mui/material/Fab';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import Fade from '@mui/material/Fade';
+import { set, get } from '../store';
 
 interface Props {
   /**
@@ -73,57 +73,33 @@ function ScrollTop(props: Props) {
 
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
-function ConnectSection() {
-  const [fullAddress, setFullAddress] = useState(null);
-  // const [numberMinted, setNumberMinted] = useState(0);
-  const { t } = useTranslation();
-
-  useEffect(() => {
-    (async () => {
-      const fullAddressInStore = get('fullAddress') || null;
-      if (fullAddressInStore) {
-        const { contract } = await connectWallet();
-        // const numberMinted = await contract.numberMinted(fullAddressInStore);
-        // setNumberMinted(parseInt(numberMinted));
-        setFullAddress(fullAddressInStore);
-      }
-      subscribe('fullAddress', async () => {
-        const fullAddressInStore = get('fullAddress') || null;
-        setFullAddress(fullAddressInStore);
-        if (fullAddressInStore) {
-          // const { contract } = await connectWallet();
-        }
-      });
-    })();
-  }, []);
-
-  useEffect(() => {
-    try {
-      const fullAddressInStore = get('fullAddress') || null;
-      if (fullAddressInStore) {
-        // const { contract } = await connectWallet();
-      }
-    } catch (err: any) {
-      showMessage({
-        type: 'error',
-        title: t('getcontractE'),
-        body: err.message,
-      });
-    }
-  }, []);
-  
-  return (
-    <>
-      <ConnectWallet />{' '}
-    </>
-  );
-}
-
 const ResponsiveAppBar = () => {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
   const {fileContent, isReading, error, trigger} = useTextFileReader();
 
   const { t, i18n } = useTranslation();
+  const [selected, setSelected] = React.useState(false);
+
+  const changeLanguage = () => {
+    setSelected(!selected);
+    // https://www.i18next.com/overview/api#changelanguage
+    let lang = 'en-US';
+    if (!selected) {
+      lang = 'zh-CN'
+    }
+    set('language', lang);
+    handleLanguage();
+  };
+
+  const handleLanguage = () => {
+    const languageInStore = get('language') || null;
+    if (languageInStore) {
+      i18n.changeLanguage(languageInStore, (err, t) => {
+        if (err) return console.log('something went wrong loading', err);
+      });
+    }
+  }
+
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -137,7 +113,7 @@ const ResponsiveAppBar = () => {
     EventBus.getInstance().dispatch<string>('download_html_file_event');
   }
 
-  useEffect( () => {
+  useEffect(() => {
     if (fileContent) {
       console.log('read file ok');
       EventBus.getInstance().dispatch<string>('import_html_file_event', fileContent);
@@ -207,18 +183,18 @@ const ResponsiveAppBar = () => {
               </IconButton>
             </Tooltip>
             <Tooltip title={t('enzh')}>
-              <IconButton onClick={() => {
-                // https://www.i18next.com/overview/api#changelanguage
-                i18n.changeLanguage('zh-CN', (err, t) => {
-                  if (err) return console.log('something went wrong loading', err);
-                });
-              }}>
+              <ToggleButton
+                sx={{ '&&': { borderStyle: 'none' } }}
+                value="check"
+                selected={selected}
+                onChange={changeLanguage}
+              >
                 <TranslateIcon />
-              </IconButton>
+              </ToggleButton>
             </Tooltip>
           </Box>
           <Box>
-            <ConnectSection />
+            <ConnectWallet />
           </Box>
         </Toolbar>
       </Container>

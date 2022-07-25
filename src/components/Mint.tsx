@@ -59,7 +59,7 @@ function Mint() {
   const { enqueueSnackbar } = useSnackbar();
   const [status, setStatus] = useState('0');
   const [fullAddress, setFullAddress] = useState(null);
-  const [numberMinted, setNumberMinted] = useState(0);
+  // const [numberMinted, setNumberMinted] = useState(0);
   const [minting, setMinting] = useState(false);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -71,8 +71,7 @@ function Mint() {
   const [descriptionVerified, setDescriptionVerified] = useState(false);
   const { t } = useTranslation();
 
-  async function updateStatus() {
-    const { contract } = await connectWallet();
+  async function updateStatus(contract: any) {
     const status = await contract.status();
     setStatus(status.toString());
     console.log('status = ', status);
@@ -86,41 +85,32 @@ function Mint() {
 
   useEffect(() => {
     (async () => {
-      const fullAddressInStore = get('fullAddress') || null;
-      if (fullAddressInStore) {
-        const { contract } = await connectWallet();
-        const numberMinted = await contract.numberMinted(fullAddressInStore);
-        setNumberMinted(parseInt(numberMinted));
-        console.log('number = ', numberMinted);
-        setFullAddress(fullAddressInStore);
+      try {
+        const fullAddressInStore = get('fullAddress') || null;
+        if (fullAddressInStore) {
+          const { contract } = await connectWallet();
+          setFullAddress(fullAddressInStore);
+          updateStatus(contract);
+        }
+      } catch (err: any) {
+        showMessage({
+          type: 'error',
+          title: t('getcontractE'),
+          body: err.message,
+        });
       }
       subscribe('fullAddress', async () => {
         const fullAddressInStore = get('fullAddress') || null;
         setFullAddress(fullAddressInStore);
         if (fullAddressInStore) {
           const { contract } = await connectWallet();
-          const numberMinted = await contract.numberMinted(fullAddressInStore);
-          setNumberMinted(parseInt(numberMinted));
-          console.log('local number = ', numberMinted);
-          updateStatus();
+          // const numberMinted = await contract.numberMinted(fullAddressInStore);
+          // setNumberMinted(parseInt(numberMinted));
+          // console.log('local number = ', numberMinted);
+          updateStatus(contract);
         }
       });
     })();
-  }, []);
-
-  useEffect(() => {
-    try {
-      const fullAddressInStore = get('fullAddress') || null;
-      if (fullAddressInStore) {
-        updateStatus();
-      }
-    } catch (err: any) {
-      showMessage({
-        type: 'error',
-        title: t('getcontractE'),
-        body: err.message,
-      });
-    }
   }, []);
 
   async function storeArticleNFT(image: Blob) {
