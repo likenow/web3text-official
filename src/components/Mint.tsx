@@ -42,8 +42,10 @@ const ETHERSCAN_DOMAIN =
 const StyledMintButton = styled.div`
   display: inline-block;
   width: 100px;
+  font-size: 14px;
   text-align: center;
-  padding: 5px;
+  margin-top: 4px;
+  padding: 5px 0;
   border-radius: 16px;
   color: #FFF;
   background: #EEE;

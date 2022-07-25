@@ -53,6 +53,17 @@ const timestampIdx = 'timestamp';
 
 const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
 
+const StyledButtonGroup = styled(ButtonGroup)({
+  // change the text color for all buttons
+  '& .MuiButtonGroup-grouped': {
+    color: '#575C63',
+  },
+  // change the button group dividers color
+  '& .MuiButtonGroup-grouped:not(:last-of-type)': {
+    borderColor: 'white'
+  }
+});
+
 const MenuBar = ({ editor } : any) => {
   const [editable, setEditable] = useState<boolean>(true);
   const [level, setLevel] = React.useState(0);
@@ -84,10 +95,15 @@ const MenuBar = ({ editor } : any) => {
     setAnchorEl(null);
   };
 
+  const clickInputColor = () => {
+    const target = document.getElementById('colorInput') as HTMLInputElement;
+    target.click();
+  };
+
   const handleColor = (event: any) => {
     const target = event.target as HTMLInputElement;
-    let val = target.value;
-    editor.chain().focus().setColor(val).run();
+      let val = target.value;
+      editor.chain().focus().setColor(val).run();
   };
 
   useEffect(() => {
@@ -224,10 +240,12 @@ const MenuBar = ({ editor } : any) => {
         left: '50%',
         transform: 'translate(-50%)',
         width: 'fit-content',
-        boxSizing: 'content-box'
+        boxSizing: 'content-box',
+        backgroundColor: 'white',
+        opacity: 0.9
       }}
     >
-      <ButtonGroup size="small" variant="outlined" aria-label="small button group">
+      <StyledButtonGroup variant="text" aria-label="button group">
         {/* <Button onClick={editableHandler} sx={editable?{
           color: '#1976d2'
         }:{
@@ -271,17 +289,22 @@ const MenuBar = ({ editor } : any) => {
         }}>
           <StrikethroughSIcon />
         </Button>
-        <Button value="color" aria-label="color">
-          <FormatColorTextIcon />
+        <Button onClick={clickInputColor} value="color" aria-label="color">
           <input
+            style={{
+              width: 1,
+              height: 1,
+              marginTop: 22,
+              opacity: 0
+            }}
+            id="colorInput"
             type="color"
             onInput={handleColor}
             value={editor.getAttributes('textStyle').color}
           />
+          <FormatColorTextIcon sx={{ color: editor.getAttributes('textStyle').color}} />
           <ArrowDropDownIcon />
         </Button>
-      </ButtonGroup>
-      <ButtonGroup size="small" variant="outlined" aria-label="small button group">
         <Button onClick={() => {
           editor.chain().focus().setTextAlign('left').run();
         }}>
@@ -327,7 +350,7 @@ const MenuBar = ({ editor } : any) => {
           <AddPhotoAlternateIcon />
         </Button> */}
         <Mint />
-      </ButtonGroup>
+      </StyledButtonGroup>
       <Menu
         id="demo-positioned-menu"
         aria-labelledby="demo-positioned-button"
