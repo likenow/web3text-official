@@ -15,14 +15,13 @@ import TranslateIcon from '@mui/icons-material/Translate';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import InputIcon from '@mui/icons-material/Input';
-import ToggleButton from '@mui/material/ToggleButton';
 import ConnectWallet from './ConnectWallet';
 import { useTranslation } from 'react-i18next';
 import useTextFileReader from './CustomFileReader';
 import { EventBus } from '../EventBus/EventBus';
 import { set, get } from '../store';
 
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const settings = ['about', 'qa', 'callus', 'thks'];
 
 const ResponsiveAppBar = () => {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
@@ -95,7 +94,7 @@ const ResponsiveAppBar = () => {
           </Box>
           <Box>
             <Tooltip title={t('opensetting')}>
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+              <IconButton size="large" onClick={handleOpenUserMenu}>
                 <MenuIcon />
               </IconButton>
             </Tooltip>
@@ -115,25 +114,25 @@ const ResponsiveAppBar = () => {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
+              {settings.map((setting: any) => (
                 <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
+                  <Typography textAlign="center">{t(setting)}</Typography>
                 </MenuItem>
               ))}
             </Menu>
             <Tooltip title={t('import')}>
-              <IconButton onClick={trigger}>
+              <IconButton size="large" onClick={trigger}>
                 <InputIcon />
               </IconButton>
             </Tooltip>
             
             <Tooltip title={t('upload')}>
-              <IconButton>
+              <IconButton size="large">
                 <CloudUploadIcon />
               </IconButton>
             </Tooltip>
             <Tooltip title={t('download')}>
-              <IconButton onClick={downloadClick}>
+              <IconButton size="large" onClick={downloadClick}>
                 <FileDownloadIcon />
               </IconButton>
             </Tooltip>
@@ -163,14 +162,9 @@ const ResponsiveAppBar = () => {
             </Menu> */}
 
             <Tooltip title={t('enzh')}>
-              <ToggleButton
-                sx={{ '&&': { borderStyle: 'none' } }}
-                value="check"
-                selected={selected}
-                onChange={changeLanguage}
-              >
+              <IconButton size="large" onClick={changeLanguage}>
                 <TranslateIcon />
-              </ToggleButton>
+              </IconButton>
             </Tooltip>
           </Box>
           <Box>

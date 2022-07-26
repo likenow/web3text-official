@@ -159,11 +159,11 @@ function Mint() {
       if (url) {
         mintArticle(url);
       } else {
-        const message = 'Image url empty error';
+        const message = t('urlempty');
         enqueueSnackbar(message, { variant: 'error' });
       }
     } else {
-      const message = 'Metadata empty error';
+      const message = t('dataempty');
       enqueueSnackbar(message, { variant: 'error' });
     }
   }
@@ -236,7 +236,7 @@ function Mint() {
         console.log('canvas data == ', data);
       }, "image/jpeg", 0.95); // JPEG at 95% quality
     } else {
-      const message = 'Canvas empty error';
+      const message = t('canvsempty');
       enqueueSnackbar(message, { variant: 'error' });
     }
   }
@@ -260,7 +260,7 @@ function Mint() {
         preview.appendChild(c);
         setLoading(false);
       } else {
-        const message = 'Canvas empty error';
+        const message = t('canvsempty');
         enqueueSnackbar(message, { variant: 'error' });
       }
     });
@@ -275,7 +275,7 @@ function Mint() {
     // console.log('handleName = ', event.target.value);
     if (event.target.value.length > 50) {
       // console.log('超过字数限制 => ', event.target.value);
-      const message = 'Exceeds the word limit';
+      const message = t('wordlimit');
       enqueueSnackbar(message, { variant: 'warning', preventDuplicate: true });
       // setNameVerified(true);
       return;
@@ -288,7 +288,7 @@ function Mint() {
     // console.log('handleDescription = ', event.target.value);
     if (event.target.value.length > 150) {
       // console.log('超过字数限制 => ', event.target.value);
-      const message = 'Exceeds the word limit';
+      const message = t('wordlimit');
       enqueueSnackbar(message, { variant: 'warning', preventDuplicate: true });
       // setDescriptionVerified(true);
       return;
@@ -398,9 +398,9 @@ function Mint() {
             autoFocus
             // error={nameVerified}
             // id="outlined-required"
-            label="Title"
-            placeholder="Enter A Title"
-            helperText="Title.(< 50 characters)"
+            label={t('title')}
+            placeholder={t('titleplace')}
+            helperText={t('helpertitle')}
             sx={{ mt: 5, mb: 2, width: '100%'}}
             value={nftName}
             onChange={handleName}
@@ -409,9 +409,9 @@ function Mint() {
             // required
             // error={descriptionVerified}
             // id="outlined-required"
-            label="Description"
-            placeholder="Enter Description of your Article"
-            helperText="Description.(< 150 characters)"
+            label={t('desc')}
+            placeholder={t('descplace')}
+            helperText={t('helperdesc')}
             multiline
             maxRows={4}
             sx={{ mb: 5, width: '100%'}}
