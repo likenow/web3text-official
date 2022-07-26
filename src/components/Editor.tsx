@@ -43,6 +43,47 @@ import { EventBus } from '../EventBus/index';
 import { styled } from '@mui/material/styles';
 import { get, subscribe } from '../store';
 import { useTranslation } from 'react-i18next';
+import useScrollTrigger from '@mui/material/useScrollTrigger';
+import Box from '@mui/material/Box';
+import Fab from '@mui/material/Fab';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import Fade from '@mui/material/Fade';
+
+interface Props {
+  children: React.ReactElement;
+}
+
+function ScrollTop(props: Props) {
+  const { children } = props;
+  const trigger = useScrollTrigger({
+    disableHysteresis: true,
+    threshold: 100,
+  });
+
+  const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    const anchor = (
+      (event.target as HTMLDivElement).ownerDocument || document
+    ).querySelector('#back-to-top-anchor');
+
+    if (anchor) {
+      anchor.scrollIntoView({
+        block: 'center',
+      });
+    }
+  };
+
+  return (
+    <Fade in={trigger}>
+      <Box
+        onClick={handleClick}
+        role="presentation"
+        sx={{ position: 'fixed', bottom: 16, right: 16 }}
+      >
+        {children}
+      </Box>
+    </Fade>
+  );
+}
 
 const levels = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
 const tbName = 'articles';
@@ -504,7 +545,7 @@ const Editor = () => {
   return (
     <div>
       <MenuBar editor={editor} />
-      <Offset />
+      <Offset id="back-to-top-anchor" />
       <div id='editorContainer'
         style={{
           width: '70%',
@@ -513,6 +554,11 @@ const Editor = () => {
       >
         <EditorContent editor={editor} />
       </div>
+      <ScrollTop>
+        <Fab size="small" aria-label="scroll back to top">
+          <KeyboardArrowUpIcon />
+        </Fab>
+      </ScrollTop>
     </div>
   )
 }
