@@ -69,8 +69,8 @@ function Mint() {
   const [articleCanvas, setArticleCanvas] = useState(null);
   const [nftName, setName] = useState("");
   const [nftDescription, setDescription] = useState("");
-  const [nameVerified, setNameVerified] = useState(false);
-  const [descriptionVerified, setDescriptionVerified] = useState(false);
+  // const [nameVerified, setNameVerified] = useState(false);
+  // const [descriptionVerified, setDescriptionVerified] = useState(false);
   const { t } = useTranslation();
 
   async function updateStatus(contract: any) {
@@ -213,20 +213,20 @@ function Mint() {
   }
   
   function canvas2Blob(canvas: any) {
-    if (nftName.length == 0) {
-      setNameVerified(true);
-      return;
-    }
-    if (nftDescription.length == 0) {
-      setDescriptionVerified(true);
-      return;
-    }
-    if (nameVerified) {
-      return;
-    }
-    if (descriptionVerified) {
-      return;
-    }
+    // if (nftName.length == 0) {
+    //   setNameVerified(true);
+    //   return;
+    // }
+    // if (nftDescription.length == 0) {
+    //   setDescriptionVerified(true);
+    //   return;
+    // }
+    // if (nameVerified) {
+    //   return;
+    // }
+    // if (descriptionVerified) {
+    //   return;
+    // }
     setHud(true);
     setMinting(true);
     if (canvas) {
@@ -277,11 +277,11 @@ function Mint() {
       // console.log('超过字数限制 => ', event.target.value);
       const message = 'Exceeds the word limit';
       enqueueSnackbar(message, { variant: 'warning', preventDuplicate: true });
-      setNameVerified(true);
+      // setNameVerified(true);
       return;
     }
     setName(event.target.value);
-    setNameVerified(false);
+    // setNameVerified(false);
   }
 
   const handleDescription = (event: any) => {
@@ -290,11 +290,11 @@ function Mint() {
       // console.log('超过字数限制 => ', event.target.value);
       const message = 'Exceeds the word limit';
       enqueueSnackbar(message, { variant: 'warning', preventDuplicate: true });
-      setDescriptionVerified(true);
+      // setDescriptionVerified(true);
       return;
     }
     setDescription(event.target.value);
-    setDescriptionVerified(false);
+    // setDescriptionVerified(false);
   }
 
   let mintButton = (
@@ -360,7 +360,7 @@ function Mint() {
             setHud(false);
           }}
         >
-          <CircularProgress />
+          <CircularProgress sx={{ color: '#FFF'}} />
         </Backdrop>
         <AppBar elevation={1} sx={{ position: 'relative', color: '#000', backgroundColor: '#FFF' }}>
           <Toolbar>
@@ -394,23 +394,23 @@ function Mint() {
         </AppBar>
         <Container sx={{maxWidth: 'sm'}}>
           <TextField
-            required
+            // required
             autoFocus
-            error={nameVerified}
-            id="outlined-required"
-            label="Required"
-            placeholder="Title"
+            // error={nameVerified}
+            // id="outlined-required"
+            label="Title"
+            placeholder="Enter A Title"
             helperText="Title.(< 50 characters)"
             sx={{ mt: 5, mb: 2, width: '100%'}}
             value={nftName}
             onChange={handleName}
           />
           <TextField
-            required
-            error={descriptionVerified}
-            id="outlined-required"
-            label="Required"
-            placeholder="Description of your Article"
+            // required
+            // error={descriptionVerified}
+            // id="outlined-required"
+            label="Description"
+            placeholder="Enter Description of your Article"
             helperText="Description.(< 150 characters)"
             multiline
             maxRows={4}

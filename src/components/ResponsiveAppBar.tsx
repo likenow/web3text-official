@@ -11,7 +11,7 @@ import Container from '@mui/material/Container';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import TranslateIcon from '@mui/icons-material/Translate';
-import ShareIcon from '@mui/icons-material/Share';
+// import ShareIcon from '@mui/icons-material/Share';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import InputIcon from '@mui/icons-material/Input';
@@ -26,6 +26,7 @@ const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 const ResponsiveAppBar = () => {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+  // const [anchorElShare, setAnchorElShare] = React.useState<null | HTMLElement>(null);
   const {fileContent, isReading, error, trigger} = useTextFileReader();
 
   const { t, i18n } = useTranslation();
@@ -49,7 +50,7 @@ const ResponsiveAppBar = () => {
         if (err) return console.log('something went wrong loading', err);
       });
     }
-  }
+  };
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -62,7 +63,15 @@ const ResponsiveAppBar = () => {
   const downloadClick = () => {
     console.log('downloadClick');
     EventBus.getInstance().dispatch<string>('download_html_file_event');
-  }
+  };
+
+  // const handleOpenShareMenu = (event: React.MouseEvent<HTMLElement>) => {
+  //   setAnchorElShare(event.currentTarget);
+  // };
+
+  // const handleCloseShareMenu = () => {
+  //   setAnchorElShare(null);
+  // }
 
   useEffect(() => {
     if (fileContent) {
@@ -128,11 +137,31 @@ const ResponsiveAppBar = () => {
                 <FileDownloadIcon />
               </IconButton>
             </Tooltip>
-            <Tooltip title={t('share')}>
-              <IconButton>
+            {/* <Tooltip title={t('share')}>
+              <IconButton 
+              onClick={handleOpenShareMenu} 
+              id="basic-button"
+              aria-controls={Boolean(anchorElShare) ? 'basic-menu' : undefined}
+              aria-haspopup="true"
+              aria-expanded={Boolean(anchorElShare) ? 'true' : undefined}
+            >
                 <ShareIcon />
               </IconButton>
             </Tooltip>
+            <Menu
+              id="basic-menu"
+              anchorEl={anchorElShare}
+              open={Boolean(anchorElShare)}
+              onClose={handleCloseShareMenu}
+              MenuListProps={{
+                'aria-labelledby': 'basic-button',
+              }}
+            >
+              <MenuItem onClick={handleCloseShareMenu}>twitter</MenuItem>
+              <MenuItem onClick={handleCloseShareMenu}>facebook</MenuItem>
+              <MenuItem onClick={handleCloseShareMenu}>youtube</MenuItem>
+            </Menu> */}
+
             <Tooltip title={t('enzh')}>
               <ToggleButton
                 sx={{ '&&': { borderStyle: 'none' } }}
