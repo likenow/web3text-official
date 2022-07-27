@@ -84,7 +84,7 @@ const ResponsiveAppBar = () => {
             </Button>
           </Box>
           <Box>
-            <Tooltip title={t('opensetting')}>
+            <Tooltip title={t('more')}>
               <IconButton size="large" onClick={handleOpenUserMenu}>
                 <MenuIcon />
               </IconButton>

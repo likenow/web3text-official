@@ -48,6 +48,7 @@ import Box from '@mui/material/Box';
 import Fab from '@mui/material/Fab';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import Fade from '@mui/material/Fade';
+import Tooltip from '@mui/material/Tooltip';
 
 interface Props {
   children: React.ReactElement;
@@ -106,6 +107,7 @@ const StyledButtonGroup = styled(ButtonGroup)({
 });
 
 const MenuBar = ({ editor } : any) => {
+  const { t } = useTranslation();
   const [editable, setEditable] = useState<boolean>(true);
   const [level, setLevel] = React.useState(0);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -286,7 +288,7 @@ const MenuBar = ({ editor } : any) => {
         opacity: 0.9
       }}
     >
-      <StyledButtonGroup variant="text" aria-label="button group">
+      <StyledButtonGroup size="small" variant="text" aria-label="small button group">
         {/* <Button onClick={editableHandler} sx={editable?{
           color: '#1976d2'
         }:{
@@ -294,99 +296,137 @@ const MenuBar = ({ editor } : any) => {
         }}>
           <EditOffIcon />
         </Button> */}
-        <Button onClick={() => editor.chain().focus().undo().run()}>
-          <UndoIcon />
-        </Button>
-        <Button onClick={() => editor.chain().focus().redo().run()}>
-          <RedoIcon />
-        </Button>
-        <Button
-          id="demo-positioned-button"
-          aria-controls={open ? 'demo-positioned-menu' : undefined}
-          aria-haspopup="true"
-          aria-expanded={open ? 'true' : undefined}
-          onClick={handleClick}
-        >
-          {levels[level]}
-          <ArrowDropDownIcon />
-        </Button>
-        <Button onClick={() => {
-          editor.chain().focus().toggleBold().run();
-        }}>
-          <FormatBoldIcon />
-        </Button>
-        <Button onClick={() => {
-          editor.chain().focus().toggleItalic().run();
-        }}>
-          <FormatItalicIcon />
-        </Button>
-        <Button onClick={() => {
-          editor.chain().focus().toggleUnderline().run();
-        }}>
-          <FormatUnderlinedIcon />
-        </Button>
-        <Button onClick={() => {
-          editor.chain().focus().toggleStrike().run();
-        }}>
-          <StrikethroughSIcon />
-        </Button>
-        <Button onClick={clickInputColor} value="color" aria-label="color">
-          <input
-            style={{
-              width: 1,
-              height: 1,
-              marginTop: 22,
-              opacity: 0
-            }}
-            id="colorInput"
-            type="color"
-            onInput={handleColor}
-            value={editor.getAttributes('textStyle').color}
-          />
-          <FormatColorTextIcon sx={{ color: editor.getAttributes('textStyle').color}} />
-          <ArrowDropDownIcon />
-        </Button>
-        <Button onClick={() => {
-          editor.chain().focus().setTextAlign('left').run();
-        }}>
-          <FormatAlignLeftIcon />
-        </Button>
-        <Button onClick={() => {
-          editor.chain().focus().setTextAlign('center').run();
-        }}>
-          <FormatAlignCenterIcon />
-        </Button>
-        <Button onClick={() => {
-          editor.chain().focus().setTextAlign('right').run();
-        }}>
-          <FormatAlignRightIcon />
-        </Button>
-        <Button onClick={() => {
-          editor.chain().focus().setTextAlign('justify').run();
-        }}>
-          <FormatAlignJustifyIcon />
-        </Button>
-        <Button onClick={() => editor.chain().focus().toggleBulletList().run()}>
-          <FormatListBulletedIcon />
-        </Button>
-        <Button onClick={() => editor.chain().focus().toggleOrderedList().run()}>
-          <FormatListNumberedIcon />
-        </Button>
-        <Button onClick={() => editor.chain().focus().toggleCode().run()}>
-          <CodeIcon />
-        </Button>
-        <Button onClick={() => editor.chain().focus().toggleCodeBlock().run()}>
-          <DataObjectIcon />
-        </Button>
-        <Button onClick={() => editor.chain().focus().toggleBlockquote().run()}>
-          <FormatQuoteIcon />
-        </Button>
-        <Button onClick={() => editor.chain().focus().setHorizontalRule().run()}>
-          <HorizontalRuleIcon />
-        </Button>
-        <Button onClick={setLink}>
-          <AddLinkIcon />
-        </Button>
+        <Tooltip title={t('undo')}>
+          <Button onClick={() => editor.chain().focus().undo().run()}>
+            <UndoIcon />
+          </Button>
+        </Tooltip>
+        <Tooltip title={t('redo')}>
+          <Button onClick={() => editor.chain().focus().redo().run()}>
+            <RedoIcon />
+          </Button>
+        </Tooltip>
+        <Tooltip title={t('level')}>
+          <Button
+            id="demo-positioned-button"
+            aria-controls={open ? 'demo-positioned-menu' : undefined}
+            aria-haspopup="true"
+            aria-expanded={open ? 'true' : undefined}
+            onClick={handleClick}
+          >
+            {levels[level]}
+            <ArrowDropDownIcon />
+          </Button>
+        </Tooltip>
+        <Tooltip title={t('bold')}>
+          <Button onClick={() => {
+            editor.chain().focus().toggleBold().run();
+          }}>
+            <FormatBoldIcon />
+          </Button>
+        </Tooltip>
+        <Tooltip title={t('italic')}>
+          <Button onClick={() => {
+            editor.chain().focus().toggleItalic().run();
+          }}>
+            <FormatItalicIcon />
+          </Button>
+        </Tooltip>
+        <Tooltip title={t('udline')}>
+          <Button onClick={() => {
+            editor.chain().focus().toggleUnderline().run();
+          }}>
+            <FormatUnderlinedIcon />
+          </Button>
+        </Tooltip>
+        <Tooltip title={t('strike')}>
+          <Button onClick={() => {
+            editor.chain().focus().toggleStrike().run();
+          }}>
+            <StrikethroughSIcon />
+          </Button>
+        </Tooltip>
+        <Tooltip title={t('color')}>
+          <Button onClick={clickInputColor} value="color" aria-label="color">
+            <input
+              style={{
+                width: 1,
+                height: 1,
+                marginTop: 22,
+                opacity: 0
+              }}
+              id="colorInput"
+              type="color"
+              onInput={handleColor}
+              value={editor.getAttributes('textStyle').color}
+            />
+            <FormatColorTextIcon sx={{ color: editor.getAttributes('textStyle').color}} />
+            <ArrowDropDownIcon />
+          </Button>
+        </Tooltip>
+        <Tooltip title={t('left')}>
+          <Button onClick={() => {
+            editor.chain().focus().setTextAlign('left').run();
+          }}>
+            <FormatAlignLeftIcon />
+          </Button>
+        </Tooltip>
+        <Tooltip title={t('center')}>
+          <Button onClick={() => {
+            editor.chain().focus().setTextAlign('center').run();
+          }}>
+            <FormatAlignCenterIcon />
+          </Button>
+        </Tooltip>
+        <Tooltip title={t('right')}>
+          <Button onClick={() => {
+            editor.chain().focus().setTextAlign('right').run();
+          }}>
+            <FormatAlignRightIcon />
+          </Button>
+        </Tooltip>
+        <Tooltip title={t('justify')}>
+          <Button onClick={() => {
+            editor.chain().focus().setTextAlign('justify').run();
+          }}>
+            <FormatAlignJustifyIcon />
+          </Button>
+        </Tooltip>
+        <Tooltip title={t('blist')}>
+          <Button onClick={() => editor.chain().focus().toggleBulletList().run()}>
+            <FormatListBulletedIcon />
+          </Button>
+        </Tooltip>
+        <Tooltip title={t('olist')}>
+          <Button onClick={() => editor.chain().focus().toggleOrderedList().run()}>
+            <FormatListNumberedIcon />
+          </Button>
+        </Tooltip>
+        <Tooltip title={t('code')}>
+          <Button onClick={() => editor.chain().focus().toggleCode().run()}>
+            <CodeIcon />
+          </Button>
+        </Tooltip>
+        <Tooltip title={t('codeblock')}>
+          <Button onClick={() => editor.chain().focus().toggleCodeBlock().run()}>
+            <DataObjectIcon />
+          </Button>
+        </Tooltip>
+        <Tooltip title={t('bquote')}>
+          <Button onClick={() => editor.chain().focus().toggleBlockquote().run()}>
+            <FormatQuoteIcon />
+          </Button>
+        </Tooltip>
+        <Tooltip title={t('hrule')}>
+          <Button onClick={() => editor.chain().focus().setHorizontalRule().run()}>
+            <HorizontalRuleIcon />
+          </Button>
+        </Tooltip>
+        <Tooltip title={t('link')}>
+          <Button onClick={setLink}>
+            <AddLinkIcon />
+          </Button>
+        </Tooltip>
         {/* <Button onClick={addImage}> 
           <AddPhotoAlternateIcon />
         </Button> */}
