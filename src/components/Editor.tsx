@@ -86,7 +86,7 @@ function ScrollTop(props: Props) {
   );
 }
 
-const levels = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
+const levels = ['H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'P1'];
 const tbName = 'articles';
 const dbName = 'article-db';
 const addressIdx = 'address';
@@ -130,7 +130,11 @@ const MenuBar = ({ editor } : any) => {
   ) => {
     setLevel(index);
     let l = index+1;
-    editor.chain().focus().toggleHeading({ level: l }).run();
+    if (l == 7) {
+      editor.chain().focus().setParagraph().run();
+    } else {
+      editor.chain().focus().toggleHeading({ level: l }).run();
+    }
     setAnchorEl(null);
   };
 
@@ -155,6 +159,39 @@ const MenuBar = ({ editor } : any) => {
     }
     editor.setEditable(editable)
   }, [editor, editable]);
+
+  useEffect(() => {
+    console.log('selectionUpdate');
+    const handleLevelFocuse = () => {
+      let ispActive = editor.isActive('paragraph');
+      let ish1Active = editor.isActive('heading', { level: 1 });
+      let ish2Active = editor.isActive('heading', { level: 2 });
+      let ish3Active = editor.isActive('heading', { level: 3 });
+      let ish4Active = editor.isActive('heading', { level: 4 });
+      let ish5Active = editor.isActive('heading', { level: 5 });
+      let ish6Active = editor.isActive('heading', { level: 6 });
+      if (ispActive) {
+        setLevel(6);
+      } else if (ish1Active) {
+        setLevel(0);
+      } else if (ish2Active) {
+        setLevel(1);
+      } else if (ish3Active) {
+        setLevel(2);
+      } else if (ish4Active) {
+        setLevel(3);
+      } else if (ish5Active) {
+        setLevel(4);
+      } else if (ish6Active) {
+        setLevel(5);
+      }
+    }
+    editor.on('selectionUpdate', handleLevelFocuse);
+    return function cleanup() {
+      // … and unbind.
+      editor.off('selectionUpdate', handleLevelFocuse);
+    }
+  }, [editor]);
 
   const setLink = useCallback(() => {
     const previousUrl = editor.getAttributes('link').href
@@ -276,6 +313,7 @@ const MenuBar = ({ editor } : any) => {
 
   return (
     <div
+      id="customEditorMenuToolBar"
       style={{
         position: 'fixed',
         zIndex: '1',
@@ -313,22 +351,29 @@ const MenuBar = ({ editor } : any) => {
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
             onClick={handleClick}
+            sx={{ fontSize: '18px', fontWeight: '600'}}
           >
             {levels[level]}
             <ArrowDropDownIcon />
           </Button>
         </Tooltip>
         <Tooltip title={t('bold')}>
-          <Button onClick={() => {
-            editor.chain().focus().toggleBold().run();
-          }}>
+          <Button
+            onClick={() => {
+              editor.chain().focus().toggleBold().run();
+            }}
+            className={editor.isActive('bold') ? 'is-active' : ''}
+          >
             <FormatBoldIcon />
           </Button>
         </Tooltip>
         <Tooltip title={t('italic')}>
-          <Button onClick={() => {
-            editor.chain().focus().toggleItalic().run();
-          }}>
+          <Button 
+            onClick={() => {
+              editor.chain().focus().toggleItalic().run();
+            }}
+            className={editor.isActive('italic') ? 'is-active' : ''}
+          >
             <FormatItalicIcon />
           </Button>
         </Tooltip>
@@ -340,9 +385,12 @@ const MenuBar = ({ editor } : any) => {
           </Button>
         </Tooltip>
         <Tooltip title={t('strike')}>
-          <Button onClick={() => {
-            editor.chain().focus().toggleStrike().run();
-          }}>
+          <Button
+            onClick={() => {
+              editor.chain().focus().toggleStrike().run();
+            }}
+            className={editor.isActive('strike') ? 'is-active' : ''}
+          >
             <StrikethroughSIcon />
           </Button>
         </Tooltip>
@@ -393,27 +441,42 @@ const MenuBar = ({ editor } : any) => {
           </Button>
         </Tooltip>
         <Tooltip title={t('blist')}>
-          <Button onClick={() => editor.chain().focus().toggleBulletList().run()}>
+          <Button
+            onClick={() => editor.chain().focus().toggleBulletList().run()}
+            className={editor.isActive('bulletList') ? 'is-active' : ''}
+          >
             <FormatListBulletedIcon />
           </Button>
         </Tooltip>
         <Tooltip title={t('olist')}>
-          <Button onClick={() => editor.chain().focus().toggleOrderedList().run()}>
+          <Button
+            onClick={() => editor.chain().focus().toggleOrderedList().run()}
+            className={editor.isActive('orderedList') ? 'is-active' : ''}
+          >
             <FormatListNumberedIcon />
           </Button>
         </Tooltip>
         <Tooltip title={t('code')}>
-          <Button onClick={() => editor.chain().focus().toggleCode().run()}>
+          <Button
+            onClick={() => editor.chain().focus().toggleCode().run()}
+            className={editor.isActive('code') ? 'is-active' : ''}
+          >
             <CodeIcon />
           </Button>
         </Tooltip>
         <Tooltip title={t('codeblock')}>
-          <Button onClick={() => editor.chain().focus().toggleCodeBlock().run()}>
+          <Button
+            onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+            className={editor.isActive('codeBlock') ? 'is-active' : ''}
+          >
             <DataObjectIcon />
           </Button>
         </Tooltip>
         <Tooltip title={t('bquote')}>
-          <Button onClick={() => editor.chain().focus().toggleBlockquote().run()}>
+          <Button
+            onClick={() => editor.chain().focus().toggleBlockquote().run()}
+            className={editor.isActive('blockquote') ? 'is-active' : ''}
+          >
             <FormatQuoteIcon />
           </Button>
         </Tooltip>
