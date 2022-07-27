@@ -1,4 +1,9 @@
 {
+	"save": "保存",
+	"print": "打印",
+	"seedetail": "点击查看交易详情",
+	"or": "或者",
+	"seeopensea": "OpenSea 查看",
 	"urlempty": "图片 URL 为空错误",
 	"dataempty": "数据为空错误",
 	"canvsempty": "Canvas 为空错误",

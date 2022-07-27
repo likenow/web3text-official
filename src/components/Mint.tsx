@@ -23,6 +23,31 @@ import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import SpeedDial from '@mui/material/SpeedDial';
+import SpeedDialIcon from '@mui/material/SpeedDialIcon';
+import SpeedDialAction from '@mui/material/SpeedDialAction';
+import ShareIcon from '@mui/icons-material/Share';
+import SaveIcon from '@mui/icons-material/Save';
+import PrintIcon from '@mui/icons-material/Print';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import TwitterIcon from '@mui/icons-material/Twitter';
+import FacebookIcon from '@mui/icons-material/Facebook';
+import TelegramIcon from '@mui/icons-material/Telegram';
+
+const shares = [
+  { icon: <TwitterIcon />, name: 'Twitter' },
+  { icon: <FacebookIcon />, name: 'Facebook' },
+  { icon: <TelegramIcon />, name: 'Telegram' },
+];
+
+const actions = [
+  { icon: <SaveIcon />, name: 'save' },
+  { icon: <PrintIcon />, name: 'print' },
+  { icon: <ShareIcon />, name: 'share' },
+];
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -67,11 +92,42 @@ function Mint() {
   const [loading, setLoading] = useState(false);
   const [hud, setHud] = useState(false);
   const [articleCanvas, setArticleCanvas] = useState(null);
-  const [nftName, setName] = useState("");
-  const [nftDescription, setDescription] = useState("");
+  const [nftName, setName] = useState('My Title');
+  const [nftDescription, setDescription] = useState('My Description');
   // const [nameVerified, setNameVerified] = useState(false);
   // const [descriptionVerified, setDescriptionVerified] = useState(false);
   const { t } = useTranslation();
+  const [anchorElShare, setAnchorElShare] = React.useState<null | HTMLElement>(null);
+
+  const handleOpenShareMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElShare(event.currentTarget);
+  };
+
+  const handleCloseShareMenu = () => {
+    setAnchorElShare(null);
+  }
+
+  const handleMenuItemClick = (operation: string) => {
+    const a: HTMLAnchorElement = document.createElement('a');
+    document.body.appendChild(a);
+    a.target = '_blank';
+    if (operation == 'Twitter') {
+      // Twitter
+      const shareTwiter = `https://twitter.com/intent/tweet`;
+      a.href = shareTwiter;
+    } else if (operation == 'Facebook') {
+      // Facebook
+      const shareFacebook = `https://www.facebook.com/sharer/sharer.php`;
+      a.href = shareFacebook;
+    } else if (operation == 'Telegram') {
+      // Telegram
+      const shareTelegram = `https://t.me/share`;
+      a.href = shareTelegram;
+    }
+    a.setAttribute('style', 'display: none');
+    a.click();
+    a.remove();
+  }
 
   async function updateStatus(contract: any) {
     const status = await contract.status();
@@ -117,7 +173,7 @@ function Mint() {
 
   async function storeArticleNFT(image: Blob) {
     const url = URL.createObjectURL(image);
-    console.log('storeArticleNFT = ', url);
+    console.log('store Article NFT = ', url);
     const nft = {
       image, // use image Blob as `image` field
       name: nftName,
@@ -187,17 +243,16 @@ function Mint() {
                 target="_blank"
                 rel="noreferrer"
               >
-                点击查看交易详情
-              </a>{' '}
-              或者到{' '}
+                {t('seedetail')}
+              </a>
+              {t('or')}
               <a
                 href="https://opensea.io/account"
                 target="_blank"
                 rel="noreferrer"
               >
-                OpenSea 查看
+                {t('seeopensea')}
               </a>
-              。
             </div>
           ),
         });
@@ -295,6 +350,68 @@ function Mint() {
     }
     setDescription(event.target.value);
     // setDescriptionVerified(false);
+  }
+
+  const handleSpeedDialClick = (e: any, operation: string) => {
+    if (operation == 'save') {
+      const a: HTMLAnchorElement = document.createElement('a');
+      document.body.appendChild(a);
+      if (articleCanvas) {
+        console.log('save jpeg');
+        const canvas = articleCanvas as any;
+        canvas.toBlob(function(blob: any){
+          const url = URL.createObjectURL(blob);
+          console.log('url = ',url);
+          a.download = 'YourArticle.jpeg';
+          a.href = url;
+          a.setAttribute('style', 'display: none');
+          a.click();
+          a.remove();
+          // free up storage--no longer needed.
+          URL.revokeObjectURL(url);
+        }, "image/jpeg", 0.95); // JPEG at 95% quality
+      } else {
+        const message = t('canvsempty');
+        enqueueSnackbar(message, { variant: 'error' });
+      }
+    } else if (operation == 'share') {
+      handleOpenShareMenu(e);
+    } else if (operation == 'print') {
+      let iframe = document.createElement('iframe') as HTMLIFrameElement;
+      if (iframe) {
+        iframe.setAttribute(
+          "style",
+          "position:absolute;width:0px;height:0px;left:-500px;top:-500px;"
+        );
+        document.body.appendChild(iframe);
+        const cw = iframe.contentWindow;
+        if (cw) {
+          const doc = cw.document;
+          const canvas = articleCanvas as any;
+          if (canvas) {
+            console.log('print jpeg');
+            canvas.toBlob(function(blob: any){
+              const url = URL.createObjectURL(blob);
+              console.log('url = ',url);
+              // @ts-ignore
+              doc.___imageLoad___ = function () {
+                  cw.print();
+                  document.body.removeChild(iframe);
+                  // free up storage--no longer needed.
+                  URL.revokeObjectURL(url);
+              };
+              const printContentHtml = '<div style="height: 100%;width: 100%;">' + `<img src="${url}" style="max-height:100%;max-width: 100%;" onload="___imageLoad___()"/>` + '</div>';
+              doc.write(printContentHtml);
+              doc.close();
+              cw.focus();
+            }, "image/jpeg", 1.0); // JPEG at 100% quality
+          } else {
+            const message = t('canvsempty');
+            enqueueSnackbar(message, { variant: 'error' });
+          }
+        }
+      }
+    }
   }
 
   let mintButton = (
@@ -444,6 +561,40 @@ function Mint() {
             )
           }
         </Container>
+        <SpeedDial
+          ariaLabel="SpeedDial basic example"
+          sx={{ position: 'fixed', bottom: 16, right: 16 }}
+          icon={<SpeedDialIcon />}
+        >
+          {actions.map((action: any) => (
+            <SpeedDialAction
+              key={t(action.name)}
+              icon={action.icon}
+              tooltipTitle={t(action.name)}
+              onClick={(e) => {
+                handleSpeedDialClick(e, action.name);
+              }}
+            />
+          ))}
+        </SpeedDial>
+        <Menu
+          id="basic-menu"
+          anchorEl={anchorElShare}
+          open={Boolean(anchorElShare)}
+          onClose={handleCloseShareMenu}
+          MenuListProps={{
+            'aria-labelledby': 'basic-button',
+          }}
+        >
+          {shares.map((share: any) => (
+            <MenuItem onClick={() => {
+              handleMenuItemClick(share.name)
+            }} >
+              <ListItemIcon> {share.icon} </ListItemIcon>
+              <ListItemText> {share.name} </ListItemText>
+            </MenuItem>
+          ))}
+        </Menu>
       </Dialog>
     </div>
   );

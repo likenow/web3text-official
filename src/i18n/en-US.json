@@ -1,4 +1,9 @@
 {
+	"save": "Save",
+	"print": "Print",
+	"seedetail": "Click to View Transaction Details",
+	"or": "or",
+	"seeopensea": "View In OpenSea",
 	"urlempty": "Image URL empty error",
 	"dataempty": "Metadata empty error",
 	"canvsempty": "Canvas empty error",
