@@ -59,13 +59,13 @@ const ResponsiveAppBar = () => {
   };
 
   const downloadClick = () => {
-    console.log('downloadClick');
+    // console.log('downloadClick');
     EventBus.getInstance().dispatch<string>('download_html_file_event');
   };
 
   useEffect(() => {
     if (fileContent) {
-      console.log('read file ok');
+      // console.log('read file ok');
       EventBus.getInstance().dispatch<string>('import_html_file_event', fileContent);
     }
   }, [fileContent]);

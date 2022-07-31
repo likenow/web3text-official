@@ -76,7 +76,7 @@ export const Image = Node.create<ImageOptions>({
       alt: HTMLAttributes.alt,
       title: HTMLAttributes.title
     };
-    console.log('myattr = ', myattr);
+    // console.log('myattr = ', myattr);
     return ['img', mergeAttributes(this.options.HTMLAttributes, myattr)];
   },
 

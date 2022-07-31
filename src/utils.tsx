@@ -33,12 +33,12 @@ export const getDownloadSafeImgSrc = (src: string): Promise<string> => {
 
     // 1. 同域或 base64 形式 src 直接返回
     if (isValidDataUrl(src) || isSameOrigin(src)) {
-      console.log(' 同域或 base64 形式 src 直接返回', src);
+      // console.log(' 同域或 base64 形式 src 直接返回', src);
       resolve(src);
     }
 
     // 2. 跨域图片转 base64 返回
-    console.log(' 跨域图片 ', src);
+    // console.log(' 跨域图片 ', src);
     getImgToBase64(src, resolve);
   });
 };
@@ -119,7 +119,7 @@ function getImgToBase64(url: string, callback: Function, mime?: string) {
     canvas.toBlob(async function(blob: Blob){
       const base64str = await convertBlobToBase64(blob);
       if (base64str) {
-        console.log('canvas base64str');
+        // console.log('canvas base64str');
         callback(base64str);
       }
     }, "image/jpeg", 0.95); // JPEG at 95% quality

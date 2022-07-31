@@ -24,7 +24,7 @@ i18n
   .init({
     resources,
     lng: language,
-    debug: true
+    debug: false
 });
 
 export default i18n;

@@ -197,7 +197,7 @@ const MenuBar = ({ editor } : any) => {
   }, [editor, editable]);
 
   useEffect(() => {
-    console.log('selectionUpdate');
+    // console.log('selectionUpdate');
     const handleLevelFocuse = () => {
       let ispActive = editor.isActive('paragraph');
       let ish1Active = editor.isActive('heading', { level: 1 });
@@ -260,7 +260,7 @@ const MenuBar = ({ editor } : any) => {
       if(content) {
         editor.commands.setContent(content);
       } else {
-        console.log('content empty !!!');
+        // console.log('content empty !!!');
       }
     };
     const e = EventBus.getInstance().register('import_html_file_event', handleImportHtmlFile);
@@ -277,7 +277,7 @@ const MenuBar = ({ editor } : any) => {
       let content = editor.getHTML();
       const blob = new Blob([content], {type: 'text/html'});
       const url = URL.createObjectURL(blob);
-      console.log('url = ',url);
+      // console.log('url = ',url);
       a.download = 'YourArticle.html';
       a.href = url;
       a.setAttribute('style', 'display: none');
@@ -327,16 +327,16 @@ const MenuBar = ({ editor } : any) => {
             let ret = await indexedDb.getValueByIndex(tbName, addressIdx);
             if (ret[0]) {
               const body = ret[0]['body'];
-              console.log('body =', body);
+              // console.log('body =', body);
               editor.commands.setContent(body);
             } else {
-              console.log('result empty !!!');
+              // console.log('result empty !!!');
             }
           } else {
-            console.log('address empty !!!');
+            // console.log('address empty !!!');
           }
         };
-        console.log('editor connected_wallet_event');
+        // console.log('editor connected_wallet_event');
         connectedImportHtmlFile();
        })();
     };
@@ -448,19 +448,6 @@ const MenuBar = ({ editor } : any) => {
             <ArrowDropDownIcon />
           </Button>
         </Tooltip>
-        <Tooltip title={t('align')}>
-          <Button
-            id="align-positioned-button"
-            aria-controls={openAligning ? 'align-positioned-menu' : undefined}
-            aria-haspopup="true"
-            aria-expanded={openAligning ? 'true' : undefined}
-            onClick={handleClickAlign}
-            sx={{ fontSize: '18px', fontWeight: '600'}}
-          >
-            <FormatAlignLeftIcon />
-            <ArrowDropDownIcon />
-          </Button>
-        </Tooltip>
         <Tooltip title={t('blist')}>
           <Button
             onClick={() => editor.chain().focus().toggleBulletList().run()}
@@ -475,6 +462,19 @@ const MenuBar = ({ editor } : any) => {
             className={editor.isActive('orderedList') ? 'is-active' : ''}
           >
             <FormatListNumberedIcon />
+          </Button>
+        </Tooltip>
+        <Tooltip title={t('align')}>
+          <Button
+            id="align-positioned-button"
+            aria-controls={openAligning ? 'align-positioned-menu' : undefined}
+            aria-haspopup="true"
+            aria-expanded={openAligning ? 'true' : undefined}
+            onClick={handleClickAlign}
+            sx={{ fontSize: '18px', fontWeight: '600'}}
+          >
+            <FormatAlignLeftIcon />
+            <ArrowDropDownIcon />
           </Button>
         </Tooltip>
         <Tooltip title={t('code')}>
@@ -614,11 +614,11 @@ const Editor = () => {
 
   const articleBody = (address: string) => {
     if (!editor) {
-      console.log('articleBody editor is null');
+      // console.log('articleBody editor is null');
       return;
     }
     let content = editor.getHTML();
-    console.log('address = ', address);
+    // console.log('address = ', address);
     let article = {
       id: 1,
       title: '',
@@ -632,7 +632,7 @@ const Editor = () => {
 
   useEffect(() => {
     if (!editor) {
-      console.log('editor is null');
+      // console.log('editor is null');
       return;
     }
     const onUpdate = () => {
@@ -644,10 +644,10 @@ const Editor = () => {
           addr = address;
           content = articleBody(addr);
         }
-        console.log('saveArticle addr = ', addr);
+        // console.log('saveArticle addr = ', addr);
         // 存入 idb
         if (content) {
-          console.log('saveArticle have conent');
+          // console.log('saveArticle have conent');
           const indexedDb = new IndexedDb(dbName);
           await indexedDb.createObjectStore([tbName], [addressIdx, timestampIdx]);
           await indexedDb.putValue(tbName, content);
@@ -673,22 +673,22 @@ const Editor = () => {
       const indexedDb = new IndexedDb(dbName);
       await indexedDb.createObjectStore([tbName], [addressIdx, timestampIdx]);
       const connectedImportHtmlFile = async (address: any)=> {
-        console.log('connectedImportHtmlFile');
+        // console.log('connectedImportHtmlFile');
         if(address) {
           let ret = await indexedDb.getValueByIndex(tbName, addressIdx);
           if (ret[0]) {
             const body = ret[0]['body'];
-            console.log('body =', body);
+            // console.log('body =', body);
             editor.commands.setContent(body);
           } else {
-            console.log('result empty !!!');
+            // console.log('result empty !!!');
           }
         } else {
-          console.log('address empty !!!');
+          // console.log('address empty !!!');
         }
       };
       
-      console.log('editor ready connected_wallet_event');
+      // console.log('editor ready connected_wallet_event');
       connectedImportHtmlFile(address);
      })();
   });

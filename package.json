@@ -27,7 +27,6 @@
     "@types/react": "^18.0.14",
     "@types/react-dom": "^18.0.5",
     "@walletconnect/web3-provider": "^1.7.8",
-    "axios": "^0.27.2",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "9.0.0",
     "babel-jest": "23.6.0",

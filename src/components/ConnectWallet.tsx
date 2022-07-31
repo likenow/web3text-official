@@ -84,7 +84,7 @@ function ConnectWallet(props: any) {
   }, []);
 
   const disconnect = async () => {
-    console.log('disconnect called');
+    // console.log('disconnect called');
     await disconnectWallet();
     setAddress(null);
     set('address', '');

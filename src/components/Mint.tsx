@@ -166,11 +166,11 @@ function Mint() {
       const tk = process.env.REACT_APP_NFT_STORAGE_API_KEY;
       const client = new NFTStorage({ token: tk });
       const metadata = await client.store(nft);
-      console.log('NFT data stored! Metadata URI: ', metadata.url);
+      // console.log('NFT data stored! Metadata URI: ', metadata.url);
       getArticleNFT(metadata.url);
     } catch (error) {
       handleCloseHud();
-      console.log('NFTStorage error = ', error);
+      // console.log('NFTStorage error = ', error);
       const message = t('nftstoreE');
       enqueueSnackbar(message, { variant: 'error' });
     }
@@ -186,7 +186,7 @@ function Mint() {
     const url = makeGatewayURL(ipfsURI);
     try {
       const resp = await fetch(url);
-      console.log('resp == ', resp);
+      // console.log('resp == ', resp);
       if (resp.status == 200) {
         let result = resp.json();
         return result;
@@ -194,7 +194,7 @@ function Mint() {
         return null;
       }
     } catch (error) {
-      console.log('fetchIPFSJSON error = ', error);
+      // console.log('fetchIPFSJSON error = ', error);
       const message = t('dataempty');
       enqueueSnackbar(message, { variant: 'error' });
     }
@@ -204,10 +204,10 @@ function Mint() {
   // getArticleNFT('ipfs://bafyreiaw3j2mpjk5linklxoocs3tcv2d2hdmk344zndieuajx3ocwjvv5u/metadata.json');
   async function getArticleNFT(ipfsURI: string) {
     let metadata = await fetchIPFSJSON(ipfsURI) as any;
-    console.log('metadata == ', metadata);
+    // console.log('metadata == ', metadata);
     if (metadata) {
       let url = metadata.image;
-      console.log('ipfs url ==', url);
+      // console.log('ipfs url ==', url);
       if (url) {
         mintArticle(url);
       } else {
@@ -227,23 +227,23 @@ function Mint() {
   async function mintArticle(url: string) {
     try {
       if (fullAddress) {
-        console.log('current == ', fullAddress);
+        // console.log('current == ', fullAddress);
         const hash = ethers.utils.keccak256(
           ethers.utils.defaultAbiCoder.encode(['string'], [url])
         );
         const key = process.env.REACT_APP_PRIVATE_KEY;
-        console.log('key == ',key);
+        // console.log('key == ',key);
         if (key) {
           const signerWallet = new ethers.Wallet(key);
           const message = ethers.utils.arrayify(hash);
           const signature = await signerWallet.signMessage(message);
-          console.log('signature == ',signature);
+          // console.log('signature == ',signature);
           const { signer, contract } = await connectWallet();
           const contractWithSigner = contract.connect(signer);
           const tx = await contractWithSigner.mint(url, signature);
-          console.log('start mint article tx == ',tx);
+          // console.log('start mint article tx == ',tx);
           const response = await tx.wait();
-          console.log('res == ',response);
+          // console.log('res == ',response);
           handleClose();
           showMessage({
             type: 'success',
@@ -278,7 +278,7 @@ function Mint() {
       handleCloseHud();
     } catch (err: any) {
       handleCloseHud();
-      console.log(err);
+      // console.log(err);
       showMessage({
         type: 'error',
         title: t('mintE'),
@@ -295,7 +295,7 @@ function Mint() {
         canvas.toBlob(function(blob: any){
           const data = blob as Blob;
           storeArticleNFT(data);
-          console.log('canvas data == ', data);
+          // console.log('canvas data == ', data);
         }, "image/jpeg", 1.0); // JPEG at 100% quality
       } catch (error) {
         const message = t('canvseToImageE');
@@ -315,7 +315,7 @@ function Mint() {
       enqueueSnackbar(message, { variant: 'error' });
       return;
     }
-    console.log('texts2Image texts2Image');
+    // console.log('texts2Image texts2Image');
     setOpen(true);
     setLoading(true);
     let editorContainer = document.getElementById('editorContainer') as HTMLElement;
@@ -370,12 +370,12 @@ function Mint() {
       const a: HTMLAnchorElement = document.createElement('a');
       document.body.appendChild(a);
       if (articleCanvas) {
-        console.log('save jpeg');
+        // console.log('save jpeg');
         const canvas = articleCanvas as any;
         try {
           canvas.toBlob(function(blob: any){
             const url = URL.createObjectURL(blob);
-            console.log('url = ',url);
+            // console.log('url = ',url);
             a.download = 'YourArticle.jpeg';
             a.href = url;
             a.setAttribute('style', 'display: none');
@@ -407,11 +407,11 @@ function Mint() {
           const doc = cw.document;
           const canvas = articleCanvas as any;
           if (canvas) {
-            console.log('print jpeg');
+            // console.log('print jpeg');
             try {
               canvas.toBlob(function(blob: any){
                 const url = URL.createObjectURL(blob);
-                console.log('url = ',url);
+                // console.log('url = ',url);
                 // @ts-ignore
                 doc.___imageLoad___ = function () {
                     cw.print();
