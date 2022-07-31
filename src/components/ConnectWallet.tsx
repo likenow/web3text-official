@@ -54,7 +54,7 @@ export async function connectWallet() {
       contractABI.abi,
       provider
     );
-    }
+  }
 
   return { provider, signer, web3Instance: instance, contract };
 }

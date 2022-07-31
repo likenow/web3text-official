@@ -1,4 +1,9 @@
 {
+	"align": "对齐",
+	"nftgetE": "获取 IPFS 图片失败",
+	"canvseToImageE": "Canvas 转图片发生错误",
+	"disconnected": "钱包已断开, 请重新链接钱包",
+	"nftstoreE": "存储图片失败",
 	"level": "标题",
 	"color": "设置文字颜色",
 	"undo": "后退",
@@ -46,7 +51,7 @@
 	"retry": "连接钱包失败，请重试",
 	"getcontractE": "获取合约状态失败",
 	"more":"更多",
-	"import":"导入",
+	"import":"导入 HTML",
 	"upload":"上传",
 	"download":"下载",
 	"share":"分享",

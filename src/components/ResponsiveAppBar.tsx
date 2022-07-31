@@ -11,7 +11,7 @@ import Container from '@mui/material/Container';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import TranslateIcon from '@mui/icons-material/Translate';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+// import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import InputIcon from '@mui/icons-material/Input';
 import ConnectWallet from './ConnectWallet';
@@ -117,11 +117,11 @@ const ResponsiveAppBar = () => {
               </IconButton>
             </Tooltip>
             
-            <Tooltip title={t('upload')}>
+            {/* <Tooltip title={t('upload')}>
               <IconButton size="large">
                 <CloudUploadIcon />
               </IconButton>
-            </Tooltip>
+            </Tooltip> */}
             <Tooltip title={t('download')}>
               <IconButton size="large" onClick={downloadClick}>
                 <FileDownloadIcon />

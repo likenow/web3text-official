@@ -5,6 +5,7 @@ import { get, subscribe } from '../store';
 import { connectWallet } from './ConnectWallet';
 import showMessage from './showMessage';
 import { NFTStorage } from 'nft.storage/dist/bundle.esm.min.js';
+import { ethers } from 'ethers';
 import html2canvas from 'html2canvas';
 import Typography from '@mui/material/Typography';
 import Dialog from '@mui/material/Dialog';
@@ -84,7 +85,6 @@ const StyledMintButton = styled.div`
 
 function Mint() {
   const { enqueueSnackbar } = useSnackbar();
-  const [status, setStatus] = useState('0');
   const [fullAddress, setFullAddress] = useState(null);
   // const [numberMinted, setNumberMinted] = useState(0);
   const [minting, setMinting] = useState(false);
@@ -94,8 +94,6 @@ function Mint() {
   const [articleCanvas, setArticleCanvas] = useState(null);
   const [nftName, setName] = useState('My Title');
   const [nftDescription, setDescription] = useState('My Description');
-  // const [nameVerified, setNameVerified] = useState(false);
-  // const [descriptionVerified, setDescriptionVerified] = useState(false);
   const { t } = useTranslation();
   const [anchorElShare, setAnchorElShare] = React.useState<null | HTMLElement>(null);
 
@@ -129,16 +127,9 @@ function Mint() {
     a.remove();
   }
 
-  async function updateStatus(contract: any) {
-    const status = await contract.status();
-    setStatus(status.toString());
-    console.log('status = ', status);
-    // 在 mint 事件的时候更新数据
-    const onMint = async () => {
-      const status = await contract.status();
-      setStatus(status.toString());
-    };
-    contract.on('Minted', onMint);
+  const handleCloseHud = () => {
+      setHud(false);
+      setMinting(false);
   }
 
   useEffect(() => {
@@ -146,9 +137,10 @@ function Mint() {
       try {
         const fullAddressInStore = get('fullAddress') || null;
         if (fullAddressInStore) {
-          const { contract } = await connectWallet();
           setFullAddress(fullAddressInStore);
-          updateStatus(contract);
+        } else {
+          const message = t('disconnected');
+          enqueueSnackbar(message, { variant: 'error' });
         }
       } catch (err: any) {
         showMessage({
@@ -160,32 +152,29 @@ function Mint() {
       subscribe('fullAddress', async () => {
         const fullAddressInStore = get('fullAddress') || null;
         setFullAddress(fullAddressInStore);
-        if (fullAddressInStore) {
-          const { contract } = await connectWallet();
-          // const numberMinted = await contract.numberMinted(fullAddressInStore);
-          // setNumberMinted(parseInt(numberMinted));
-          // console.log('local number = ', numberMinted);
-          updateStatus(contract);
-        }
       });
     })();
   }, []);
 
   async function storeArticleNFT(image: Blob) {
-    const url = URL.createObjectURL(image);
-    console.log('store Article NFT = ', url);
     const nft = {
       image, // use image Blob as `image` field
       name: nftName,
       description: nftDescription
     }
-    const tk = process.env.REACT_APP_NFT_STORAGE_API_KEY;
-    console.log('tk = ', tk);
-    const client = new NFTStorage({ token: tk });
-    const metadata = await client.store(nft);
-    console.log('NFT data stored!');
-    console.log('Metadata URI: ', metadata.url);
-    getArticleNFT(metadata.url);
+    try {
+      const tk = process.env.REACT_APP_NFT_STORAGE_API_KEY;
+      const client = new NFTStorage({ token: tk });
+      const metadata = await client.store(nft);
+      console.log('NFT data stored! Metadata URI: ', metadata.url);
+      getArticleNFT(metadata.url);
+    } catch (error) {
+      handleCloseHud();
+      console.log('NFTStorage error = ', error);
+      const message = t('nftstoreE');
+      enqueueSnackbar(message, { variant: 'error' });
+    }
+    
   }
   
   // rewrite ipfs:// uris to dweb.link gateway URLs
@@ -197,11 +186,17 @@ function Mint() {
     const url = makeGatewayURL(ipfsURI);
     try {
       const resp = await fetch(url);
-      let result = resp.json();
-      // console.log('result = ', result);
-      return result;
+      console.log('resp == ', resp);
+      if (resp.status == 200) {
+        let result = resp.json();
+        return result;
+      } else {
+        return null;
+      }
     } catch (error) {
       console.log('fetchIPFSJSON error = ', error);
+      const message = t('dataempty');
+      enqueueSnackbar(message, { variant: 'error' });
     }
     
   }
@@ -209,9 +204,10 @@ function Mint() {
   // getArticleNFT('ipfs://bafyreiaw3j2mpjk5linklxoocs3tcv2d2hdmk344zndieuajx3ocwjvv5u/metadata.json');
   async function getArticleNFT(ipfsURI: string) {
     let metadata = await fetchIPFSJSON(ipfsURI) as any;
+    console.log('metadata == ', metadata);
     if (metadata) {
       let url = metadata.image;
-      console.log(url);
+      console.log('ipfs url ==', url);
       if (url) {
         mintArticle(url);
       } else {
@@ -219,45 +215,69 @@ function Mint() {
         enqueueSnackbar(message, { variant: 'error' });
       }
     } else {
-      const message = t('dataempty');
-      enqueueSnackbar(message, { variant: 'error' });
+      handleCloseHud();
+      showMessage({
+        type: 'error',
+        title: t('dataempty'),
+        body: t('nftgetE'),
+      });
     }
   }
   
   async function mintArticle(url: string) {
     try {
       if (fullAddress) {
-        const { signer, contract } = await connectWallet();
-        const contractWithSigner = contract.connect(signer);
-        const tx = await contractWithSigner.mint(url, fullAddress);
-        console.log('tx == ',tx);
-        const response = await tx.wait();
-        console.log('res == ',response);
-        showMessage({
-          type: 'success',
-          title: t('mintS'),
-          body: (
-            <div>
-              <a
+        console.log('current == ', fullAddress);
+        const hash = ethers.utils.keccak256(
+          ethers.utils.defaultAbiCoder.encode(['string'], [url])
+        );
+        const key = process.env.REACT_APP_PRIVATE_KEY;
+        console.log('key == ',key);
+        if (key) {
+          const signerWallet = new ethers.Wallet(key);
+          const message = ethers.utils.arrayify(hash);
+          const signature = await signerWallet.signMessage(message);
+          console.log('signature == ',signature);
+          const { signer, contract } = await connectWallet();
+          const contractWithSigner = contract.connect(signer);
+          const tx = await contractWithSigner.mint(url, signature);
+          console.log('start mint article tx == ',tx);
+          const response = await tx.wait();
+          console.log('res == ',response);
+          handleClose();
+          showMessage({
+            type: 'success',
+            title: t('mintS'),
+            body: (
+              <div>
+                <a
                 href={`https://${ETHERSCAN_DOMAIN}/tx/${response.transactionHash}`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                {t('seedetail')}
-              </a>
-              {t('or')}
-              <a
-                href="https://opensea.io/account"
-                target="_blank"
-                rel="noreferrer"
-              >
-                {t('seeopensea')}
-              </a>
-            </div>
-          ),
-        });
+                  target="_blank"
+                  style={{textDecoration: 'none', marginRight: '4px'}}
+                  rel="noreferrer"
+                >
+                  {t('seedetail')}
+                </a>
+                {t('or')}
+                <a
+                  href="https://opensea.io/account"
+                  target="_blank"
+                  style={{textDecoration: 'none', marginLeft: '4px'}}
+                  rel="noreferrer"
+                >
+                  {t('seeopensea')}
+                </a>
+              </div>
+            ),
+          });
+        } else {
+          const message = t('disconnected');
+          enqueueSnackbar(message, { variant: 'error' });
+        }
       }
+      handleCloseHud();
     } catch (err: any) {
+      handleCloseHud();
       console.log(err);
       showMessage({
         type: 'error',
@@ -268,29 +288,21 @@ function Mint() {
   }
   
   function canvas2Blob(canvas: any) {
-    // if (nftName.length == 0) {
-    //   setNameVerified(true);
-    //   return;
-    // }
-    // if (nftDescription.length == 0) {
-    //   setDescriptionVerified(true);
-    //   return;
-    // }
-    // if (nameVerified) {
-    //   return;
-    // }
-    // if (descriptionVerified) {
-    //   return;
-    // }
-    setHud(true);
-    setMinting(true);
     if (canvas) {
-      canvas.toBlob(function(blob: any){
-        const data = blob as Blob;
-        // storeArticleNFT(data);
-        console.log('canvas data == ', data);
-      }, "image/jpeg", 0.95); // JPEG at 95% quality
+      setHud(true);
+      setMinting(true);
+      try {
+        canvas.toBlob(function(blob: any){
+          const data = blob as Blob;
+          storeArticleNFT(data);
+          console.log('canvas data == ', data);
+        }, "image/jpeg", 1.0); // JPEG at 100% quality
+      } catch (error) {
+        const message = t('canvseToImageE');
+        enqueueSnackbar(message, { variant: 'error' });
+      }
     } else {
+      handleCloseHud();
       const message = t('canvsempty');
       enqueueSnackbar(message, { variant: 'error' });
     }
@@ -298,6 +310,12 @@ function Mint() {
 
   // https://html2canvas.hertzen.com/configuration
   async function texts2Image() {
+    if (!fullAddress) {
+      const message = t('disconnected');
+      enqueueSnackbar(message, { variant: 'error' });
+      return;
+    }
+    console.log('texts2Image texts2Image');
     setOpen(true);
     setLoading(true);
     let editorContainer = document.getElementById('editorContainer') as HTMLElement;
@@ -311,7 +329,6 @@ function Mint() {
         const c = canvas as any;
         setArticleCanvas(c);
         let preview = document.getElementById('preview_texts_canvas') as HTMLElement;
-        // console.log(preview);
         preview.appendChild(c);
         setLoading(false);
       } else {
@@ -332,11 +349,9 @@ function Mint() {
       // console.log('超过字数限制 => ', event.target.value);
       const message = t('wordlimit');
       enqueueSnackbar(message, { variant: 'warning', preventDuplicate: true });
-      // setNameVerified(true);
       return;
     }
     setName(event.target.value);
-    // setNameVerified(false);
   }
 
   const handleDescription = (event: any) => {
@@ -345,11 +360,9 @@ function Mint() {
       // console.log('超过字数限制 => ', event.target.value);
       const message = t('wordlimit');
       enqueueSnackbar(message, { variant: 'warning', preventDuplicate: true });
-      // setDescriptionVerified(true);
       return;
     }
     setDescription(event.target.value);
-    // setDescriptionVerified(false);
   }
 
   const handleSpeedDialClick = (e: any, operation: string) => {
@@ -359,17 +372,22 @@ function Mint() {
       if (articleCanvas) {
         console.log('save jpeg');
         const canvas = articleCanvas as any;
-        canvas.toBlob(function(blob: any){
-          const url = URL.createObjectURL(blob);
-          console.log('url = ',url);
-          a.download = 'YourArticle.jpeg';
-          a.href = url;
-          a.setAttribute('style', 'display: none');
-          a.click();
-          a.remove();
-          // free up storage--no longer needed.
-          URL.revokeObjectURL(url);
-        }, "image/jpeg", 0.95); // JPEG at 95% quality
+        try {
+          canvas.toBlob(function(blob: any){
+            const url = URL.createObjectURL(blob);
+            console.log('url = ',url);
+            a.download = 'YourArticle.jpeg';
+            a.href = url;
+            a.setAttribute('style', 'display: none');
+            a.click();
+            a.remove();
+            // free up storage--no longer needed.
+            URL.revokeObjectURL(url);
+          }, "image/jpeg", 1.0); // JPEG at 100% quality
+        } catch (error) {
+          const message = t('canvseToImageE');
+          enqueueSnackbar(message, { variant: 'error' });
+        }
       } else {
         const message = t('canvsempty');
         enqueueSnackbar(message, { variant: 'error' });
@@ -390,21 +408,26 @@ function Mint() {
           const canvas = articleCanvas as any;
           if (canvas) {
             console.log('print jpeg');
-            canvas.toBlob(function(blob: any){
-              const url = URL.createObjectURL(blob);
-              console.log('url = ',url);
-              // @ts-ignore
-              doc.___imageLoad___ = function () {
-                  cw.print();
-                  document.body.removeChild(iframe);
-                  // free up storage--no longer needed.
-                  URL.revokeObjectURL(url);
-              };
-              const printContentHtml = '<div style="height: 100%;width: 100%;">' + `<img src="${url}" style="max-height:100%;max-width: 100%;" onload="___imageLoad___()"/>` + '</div>';
-              doc.write(printContentHtml);
-              doc.close();
-              cw.focus();
-            }, "image/jpeg", 1.0); // JPEG at 100% quality
+            try {
+              canvas.toBlob(function(blob: any){
+                const url = URL.createObjectURL(blob);
+                console.log('url = ',url);
+                // @ts-ignore
+                doc.___imageLoad___ = function () {
+                    cw.print();
+                    document.body.removeChild(iframe);
+                    // free up storage--no longer needed.
+                    URL.revokeObjectURL(url);
+                };
+                const printContentHtml = '<div style="height: 100%;width: 100%;">' + `<img src="${url}" style="max-height:100%;max-width: 100%;" onload="___imageLoad___()"/>` + '</div>';
+                doc.write(printContentHtml);
+                doc.close();
+                cw.focus();
+              }, "image/jpeg", 1.0); // JPEG at 100% quality
+            } catch (error) {
+              const message = t('canvseToImageE');
+              enqueueSnackbar(message, { variant: 'error' });
+            }
           } else {
             const message = t('canvsempty');
             enqueueSnackbar(message, { variant: 'error' });
@@ -422,23 +445,10 @@ function Mint() {
         cursor: 'not-allowed',
       }}
     >
-      未开始
+      { t('uncw') }
     </StyledMintButton>
   );
-
-  if (!fullAddress) {
-    mintButton = (
-      <StyledMintButton
-        style={{
-          background: '#EEE',
-          color: '#999',
-          cursor: 'not-allowed',
-        }}
-      >
-        { t('uncw') }
-      </StyledMintButton>
-    );
-  } else {
+  if (fullAddress) {
     mintButton = (
       <div
         style={{
@@ -454,7 +464,6 @@ function Mint() {
             background: 'linear-gradient(191deg, #FD2F79 0%, #FD6F6F 100%)',
           }}
         >
-          {/* 铸造文章 NFT{minting ? '中...' : ''} */}
           { t('mint') }
         </StyledMintButton>
       </div>
@@ -511,10 +520,7 @@ function Mint() {
         </AppBar>
         <Container sx={{maxWidth: 'sm'}}>
           <TextField
-            // required
             autoFocus
-            // error={nameVerified}
-            // id="outlined-required"
             label={t('title')}
             placeholder={t('titleplace')}
             helperText={t('helpertitle')}
@@ -523,9 +529,6 @@ function Mint() {
             onChange={handleName}
           />
           <TextField
-            // required
-            // error={descriptionVerified}
-            // id="outlined-required"
             label={t('desc')}
             placeholder={t('descplace')}
             helperText={t('helperdesc')}

@@ -10,10 +10,10 @@ import TextStyle from '@tiptap/extension-text-style';
 import Link from '@tiptap/extension-link';
 // import { generateHTML, generateJSON } from '@tiptap/html';
 import React, { useEffect, useCallback, useState } from 'react';
-import FormatAlignCenterIcon from '@mui/icons-material/FormatAlignCenter';
+// import FormatAlignCenterIcon from '@mui/icons-material/FormatAlignCenter';
 import FormatAlignLeftIcon from '@mui/icons-material/FormatAlignLeft';
-import FormatAlignRightIcon from '@mui/icons-material/FormatAlignRight';
-import FormatAlignJustifyIcon from '@mui/icons-material/FormatAlignJustify';
+// import FormatAlignRightIcon from '@mui/icons-material/FormatAlignRight';
+// import FormatAlignJustifyIcon from '@mui/icons-material/FormatAlignJustify';
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
 import FormatItalicIcon from '@mui/icons-material/FormatItalic';
 import StrikethroughSIcon from '@mui/icons-material/StrikethroughS';
@@ -108,10 +108,14 @@ const StyledButtonGroup = styled(ButtonGroup)({
 
 const MenuBar = ({ editor } : any) => {
   const { t } = useTranslation();
+  const aligns = [t('left'), t('center'), t('right'), t('justify')];
   const [editable, setEditable] = useState<boolean>(true);
   const [level, setLevel] = React.useState(0);
+  const [alignIdx, setAlignIdx] = React.useState(0);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const [anchorAlign, setAnchorAlign] = React.useState<null | HTMLElement>(null);
+  const openAligning = Boolean(anchorAlign);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -140,6 +144,38 @@ const MenuBar = ({ editor } : any) => {
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleClickAlign = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorAlign(event.currentTarget);
+  };
+
+  const handleAlignMenuItemClick = (
+    event: React.MouseEvent<HTMLLIElement, MouseEvent>,
+    index: number,
+  ) => {
+    setAlignIdx(index);
+    switch (index) {
+      case 0:
+        editor.chain().focus().setTextAlign('left').run();
+        break;
+      case 1:
+        editor.chain().focus().setTextAlign('center').run();
+        break;
+      case 2:
+        editor.chain().focus().setTextAlign('right').run();
+        break;
+      case 3:
+        editor.chain().focus().setTextAlign('justify').run();
+        break;
+      default:
+        break;
+    }
+    setAnchorAlign(null);
+  };
+
+  const handleCloseAlignMenu = () => {
+    setAnchorAlign(null);
   };
 
   const clickInputColor = () => {
@@ -318,7 +354,7 @@ const MenuBar = ({ editor } : any) => {
         position: 'fixed',
         zIndex: '1',
         top: '100',
-        left: '50%',
+        left: '45%',
         transform: 'translate(-50%)',
         width: 'fit-content',
         boxSizing: 'content-box',
@@ -412,32 +448,17 @@ const MenuBar = ({ editor } : any) => {
             <ArrowDropDownIcon />
           </Button>
         </Tooltip>
-        <Tooltip title={t('left')}>
-          <Button onClick={() => {
-            editor.chain().focus().setTextAlign('left').run();
-          }}>
+        <Tooltip title={t('align')}>
+          <Button
+            id="align-positioned-button"
+            aria-controls={openAligning ? 'align-positioned-menu' : undefined}
+            aria-haspopup="true"
+            aria-expanded={openAligning ? 'true' : undefined}
+            onClick={handleClickAlign}
+            sx={{ fontSize: '18px', fontWeight: '600'}}
+          >
             <FormatAlignLeftIcon />
-          </Button>
-        </Tooltip>
-        <Tooltip title={t('center')}>
-          <Button onClick={() => {
-            editor.chain().focus().setTextAlign('center').run();
-          }}>
-            <FormatAlignCenterIcon />
-          </Button>
-        </Tooltip>
-        <Tooltip title={t('right')}>
-          <Button onClick={() => {
-            editor.chain().focus().setTextAlign('right').run();
-          }}>
-            <FormatAlignRightIcon />
-          </Button>
-        </Tooltip>
-        <Tooltip title={t('justify')}>
-          <Button onClick={() => {
-            editor.chain().focus().setTextAlign('justify').run();
-          }}>
-            <FormatAlignJustifyIcon />
+            <ArrowDropDownIcon />
           </Button>
         </Tooltip>
         <Tooltip title={t('blist')}>
@@ -518,6 +539,33 @@ const MenuBar = ({ editor } : any) => {
               onClick={(event) => handleMenuItemClick(event, index)}
             >
               {l}
+            </MenuItem>
+          ))}
+        </MenuList>
+      </Menu>
+      <Menu
+        id="align-positioned-menu"
+        aria-labelledby="align-positioned-button"
+        anchorEl={anchorAlign}
+        open={openAligning}
+        onClose={handleCloseAlignMenu}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'left',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'left',
+        }}
+      >
+        <MenuList id="split-align-menu" autoFocusItem>
+          {aligns.map((a, index) => (
+            <MenuItem
+              key={a}
+              selected={index === alignIdx}
+              onClick={(event) => handleAlignMenuItemClick(event, index)}
+            >
+              {a}
             </MenuItem>
           ))}
         </MenuList>

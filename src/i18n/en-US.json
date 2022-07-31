@@ -1,4 +1,9 @@
 {
+	"align": "Aligning",
+	"nftgetE": "Get IPFS Image Error",
+	"canvseToImageE": "Canvas to Image error",
+	"disconnected": "Disconnected, please reconnect wallet",
+	"nftstoreE": "Store Image Error",
 	"level": "Level",
 	"color": "Set Text Color",
 	"undo": "Undo",
@@ -46,7 +51,7 @@
 	"retry": "Connect failed retry please",
 	"getcontractE": "Get Contract Error",
 	"more":"more",
-	"import":"Import",
+	"import":"Import HTML",
 	"upload":"Upload",
 	"download":"Download",
 	"share":"Share",
