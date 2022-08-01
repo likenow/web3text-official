@@ -4,6 +4,7 @@ import { ethers } from 'ethers';
 import Web3Modal from 'web3modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import Chip from '@mui/material/Chip';
+import CircularProgress from '@mui/material/CircularProgress';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { useTranslation } from 'react-i18next';
 import { EventBus } from '../EventBus/index';
@@ -158,6 +159,7 @@ function ConnectWallet(props: any) {
           label={loading ? t('cwing') : t('connectwallet')}
           onClick={connect}
         />
+        {loading? <CircularProgress size={15} sx={{ml:'-16px', color: 'white'}} /> : null}
       </>
     );
   }

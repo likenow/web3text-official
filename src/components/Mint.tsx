@@ -138,9 +138,6 @@ function Mint() {
         const fullAddressInStore = get('fullAddress') || null;
         if (fullAddressInStore) {
           setFullAddress(fullAddressInStore);
-        } else {
-          const message = t('disconnected');
-          enqueueSnackbar(message, { variant: 'error' });
         }
       } catch (err: any) {
         showMessage({
@@ -270,10 +267,10 @@ function Mint() {
               </div>
             ),
           });
-        } else {
-          const message = t('disconnected');
-          enqueueSnackbar(message, { variant: 'error' });
         }
+      } else {
+        const message = t('disconnected');
+        enqueueSnackbar(message, { variant: 'error' });
       }
       handleCloseHud();
     } catch (err: any) {

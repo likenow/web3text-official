@@ -19,8 +19,9 @@ import { useTranslation } from 'react-i18next';
 import useTextFileReader from './CustomFileReader';
 import { EventBus } from '../EventBus/EventBus';
 import { set, get } from '../store';
+import { Link, useNavigate } from "react-router-dom";
 
-const settings = ['about', 'qa', 'callus', 'thks'];
+const settings = ['about', 'qa', 'contact', 'thks'];
 
 const ResponsiveAppBar = () => {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
@@ -29,6 +30,11 @@ const ResponsiveAppBar = () => {
 
   const { t, i18n } = useTranslation();
   const [selected, setSelected] = React.useState(false);
+  
+  let navigate = useNavigate();
+  const handleLogoClick = () => {
+    navigate("/", { replace: true });
+  }
 
   const changeLanguage = () => {
     setSelected(!selected);
@@ -76,7 +82,7 @@ const ResponsiveAppBar = () => {
         <Toolbar disableGutters>
           <Box sx={{ flexGrow: 1}}>
             <Button disableTouchRipple
-              href='/'
+              onClick={handleLogoClick}
               style={{ backgroundColor: 'transparent', textTransform: 'none' }}
             >
               <img width={32} height={32} alt="Web3text" src="/logo192.png" />
@@ -107,7 +113,7 @@ const ResponsiveAppBar = () => {
             >
               {settings.map((setting: any) => (
                 <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{t(setting)}</Typography>
+                  <Link to={'/'+setting}>{t(setting)}</Link>
                 </MenuItem>
               ))}
             </Menu>
