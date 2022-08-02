@@ -21,7 +21,7 @@ import { EventBus } from '../EventBus/EventBus';
 import { set, get } from '../store';
 import { Link, useNavigate } from "react-router-dom";
 
-const settings = ['about', 'qa', 'contact', 'thks'];
+const settings = ['about', 'qa', 'thks'];
 
 const ResponsiveAppBar = () => {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
@@ -113,7 +113,7 @@ const ResponsiveAppBar = () => {
             >
               {settings.map((setting: any) => (
                 <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Link to={'/'+setting}>{t(setting)}</Link>
+                  <Link to={'/'+setting} style={{ textDecoration: 'none' }}>{t(setting)}</Link>
                 </MenuItem>
               ))}
             </Menu>

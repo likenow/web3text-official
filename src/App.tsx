@@ -4,7 +4,6 @@ import ResponsiveAppBar from './components/ResponsiveAppBar';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Home } from "./pages/Home";
 import { About } from "./pages/About";
-import { Contact } from "./pages/Contact";
 import { Thanks } from "./pages/Thanks";
 import { QA } from "./pages/QA";
 
@@ -17,7 +16,6 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/qa" element={<QA />} />
-          <Route path="/contact" element={<Contact />} />
           <Route path="/thks" element={<Thanks />} />
         </Routes>
       </BrowserRouter>
